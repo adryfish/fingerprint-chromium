@@ -9,7 +9,8 @@
 
 | **版本**        | **源码**                                                                                   | **Windows**                                                                                   | **Linux**                                                                                   |
 |------------------|--------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
-| **Chrome 131**   | [131.0.6778.264](https://github.com/adryfish/fingerprint-chromium/releases/tag/131.0.6778.264)               | | [ 131.0.6778.264-1_linux.tar.xz ](https://github.com/adryfish/fingerprint-chromium/releases/download/131.0.6778.264/ungoogled-chromium_131.0.6778.264-1_linux.tar.xz) |
+| **Chrome 132**   | [132.0.6834.159](https://github.com/adryfish/fingerprint-chromium/tree/132.0.6834.159)               | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/132.0.6834.159/ungoogled-chromium_132.0.6834.159-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/132.0.6834.159/ungoogled-chromium_132.0.6834.159-1.1_windows_x64.zip) | [ 132.0.6834.159-1_linux.tar.xz ](https://github.com/adryfish/fingerprint-chromium/releases/download/132.0.6834.159/ungoogled-chromium_132.0.6834.159-1_linux.tar.xz) |
+| **Chrome 131**   | [131.0.6778.264](https://github.com/adryfish/fingerprint-chromium/tree/131.0.6778.264)               | | [ 131.0.6778.264-1_linux.tar.xz ](https://github.com/adryfish/fingerprint-chromium/releases/download/131.0.6778.264/ungoogled-chromium_131.0.6778.264-1_linux.tar.xz) |
 | **Chrome 130**   | [130.0.6723.116](https://github.com/adryfish/fingerprint-chromium/tree/130.0.6723.116)               | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/130.0.6723.116/ungoogled-chromium_130.0.6723.116-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/130.0.6723.116/ungoogled-chromium_130.0.6723.116-1.1_windows_x64.zip) | [130.0.6723.116-1_linux.tar.xz](https://github.com/adryfish/fingerprint-chromium/releases/download/130.0.6723.116/ungoogled-chromium_130.0.6723.116-1_linux.tar.xz) |
 | **Chrome 129**   | [129.0.6668.100](https://github.com/adryfish/fingerprint-chromium/tree/129.0.6668.100)               | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/129.0.6668.100/ungoogled-chromium_129.0.6668.100-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/129.0.6668.100/ungoogled-chromium_129.0.6668.100-1.1_windows_x64.zip) | [129.0.6668.100-1_linux.tar.xz](https://github.com/adryfish/fingerprint-chromium/releases/download/129.0.6668.100/ungoogled-chromium_129.0.6668.100-1_linux.tar.xz) |
 
@@ -53,9 +54,9 @@
 | **插件指纹**                         | 修改插件相关特征                                                                              | `--fingerprint`（启用指纹种子后生效）                                           |
 | **硬件指纹**                         | 自定义硬件参数，包括 CPU 核心数和内存大小                                                     | `--fingerprint` <br> `--fingerprint-hardware-concurrency` |
 | **字体指纹**                         | 修改系统字体信息                                                                              | `--fingerprint`（启用指纹种子后生效）                                           |
-| **Canvas 图像数据噪声**               | 在 Canvas 图像数据中添加噪声，最多修改 10 个像素，干扰指纹生成                                | `--fingerprinting-canvas-image-data-noise`                                        |
-| **Canvas 测量文本噪声**               | 对 `Canvas::measureText()` 输出值进行比例缩放，随机因子范围为 `-0.0003%` 到 `0.0003%`，每次文档初始化时重新计算 | `--fingerprinting-canvas-measuretext-noise`                                       |
-| **ClientRects 噪声**                  | 对 `getClientRects()` 和 `getBoundingClientRect()` 输出值进行比例缩放，随机因子范围为 `-0.0003%` 到 `0.0003%`，每次文档初始化时重新计算 | `--fingerprinting-client-rects-noise`                                           |
+| **Canvas 图像数据噪声**               | 在 Canvas 图像数据中添加噪声，最多修改 10 个像素，干扰指纹生成                                | `--fingerprinting-canvas-image-data-noise`(131-) <br> `--fingerprint`(132+生效)                                        |
+| **Canvas 测量文本噪声**               | 对 `Canvas::measureText()` 输出值进行比例缩放，随机因子范围为 `-0.0003%` 到 `0.0003%`，每次文档初始化时重新计算 | `--fingerprinting-canvas-measuretext-noise`(131-) <br> `--fingerprint`(132+生效)                                      |
+| **ClientRects 噪声**                  | 对 `getClientRects()` 和 `getBoundingClientRect()` 输出值进行比例缩放，随机因子范围为 `-0.0003%` 到 `0.0003%`，每次文档初始化时重新计算 | `--fingerprinting-client-rects-noise`(131-) <br> `--fingerprint`(132+生效)                                          |
 | **WebRTC 策略**                       | 默认禁用非代理 UDP 连接，防止通过 WebRTC 泄露真实 IP 地址                                     | `--disable-non-proxied-udp`（默认启用）                                           |
 | **语言支持**                         | 设置浏览器的语言和接受的语言                                                                  | `--lang`（设置浏览器语言）<br> `--accept-lang`（设置接受语言）                     |
 | **时区支持**                         | 设置浏览器时区                                                                              | `TZ` 环境变量（设置时区，例如 `TZ=Asia/Shanghai`）                              |
@@ -82,9 +83,9 @@
 | **`--fingerprint-brand`**                  | 指定在 `User-Agent`和 `User-Agent Data` 中使用的浏览器品牌。                                 |
 | **`--fingerprint-brand-version`**          | 指定指定品牌的版本号。                                            |
 | **`--fingerprint-hardware-concurrency`**    | 指定 CPU 核心数，如果未提供，则由 `--fingerprint` 中的种子随机生成                             |
-| **`--fingerprinting-canvas-image-data-noise`** | 启用 Canvas 图像数据指纹的噪声干扰                                                            |
-| **`--fingerprinting-canvas-measuretext-noise`** | 启用 Canvas 测量文本指纹的比例缩放噪声                                                       |
-| **`--fingerprinting-client-rects-noise`**   | 启用 ClientRects 和 BoundingClientRect 的比例缩放噪声                                        |
+| **`--fingerprinting-canvas-image-data-noise`** | 启用 Canvas 图像数据指纹的噪声干扰 **(132+ 废弃)**                                                            |
+| **`--fingerprinting-canvas-measuretext-noise`** | 启用 Canvas 测量文本指纹的比例缩放噪声 **(132+ 废弃)**                                                       |
+| **`--fingerprinting-client-rects-noise`**   | 启用 ClientRects 和 BoundingClientRect 的比例缩放噪声 **(132+ 废弃)**                                        |
 | **`--disable-non-proxied-udp`**             | 指定WebRTC策略，默认是禁用非代理UDP连接(建议不设置)                                                      |
 | **`--lang`** <br>  **`--accept-lang`**      | 设置浏览器的语言                                                  |
 
