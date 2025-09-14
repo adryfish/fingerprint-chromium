@@ -1,0 +1,95 @@
+diff --git a/third_party/blink/renderer/modules/plugins/dom_plugin.cc b/third_party/blink/renderer/modules/plugins/dom_plugin.cc
+index d675d2025b..e37c4ad596 100644
+--- a/third_party/blink/renderer/modules/plugins/dom_plugin.cc
++++ b/third_party/blink/renderer/modules/plugins/dom_plugin.cc
+@@ -24,6 +24,14 @@
+ #include "third_party/blink/renderer/platform/heap/garbage_collected.h"
+ #include "third_party/blink/renderer/platform/wtf/text/atomic_string.h"
+ 
++#include <random>
++#include <string>
++#include <vector>
++
++#include "base/command_line.h"
++#include "base/strings/string_number_conversions.h"
++#include "components/ungoogled/ungoogled_switches.h"
++
+ namespace blink {
+ 
+ DOMPlugin::DOMPlugin(LocalDOMWindow* window, const PluginInfo& plugin_info)
+@@ -35,8 +43,64 @@ void DOMPlugin::Trace(Visitor* visitor) const {
+   ExecutionContextClient::Trace(visitor);
+ }
+ 
++namespace {
++uint32_t GetFingerprint() {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (!command_line->HasSwitch(switches::kFingerprint))
++    return 0;
++
++  std::string fingerprint_str = command_line->GetSwitchValueASCII(switches::kFingerprint);
++  uint32_t fingerprint;
++  if (!base::StringToUint(fingerprint_str, &fingerprint))
++    return 0;
++
++  return fingerprint;
++}
++
++uint32_t HashString(const String& str) {
++  uint32_t hash = 2166136261u;  // FNV-1a hash
++  for (char c : str.Utf8()) {
++    hash ^= c;
++    hash *= 16777619u;
++  }
++  return hash;
++}
++
++String GetRandomPluginName(uint32_t seed) {
++  std::mt19937 prng(seed);
++
++  std::vector<String> chrome{"Chrome ", "Chromium ", "Google ",
++                            "Web ", "Browser ", "OpenSource ",
++                            "Online ", "JavaScript ", ""};
++  std::vector<String> pdf{"PDF ",
++                         "Portable Document Format ",
++                         "portable-document-format ",
++                         "document ",
++                         "doc ",
++                         "PDF and PS ",
++                         "com.adobe.pdf "};
++  std::vector<String> viewer{"Viewer", "Renderer", "Display", "Plugin",
++                            "plug-in", "plug in", "extension", ""};
++
++  StringBuilder result;
++  result.Append(chrome[prng() % chrome.size()]);
++  result.Append(pdf[prng() % pdf.size()]);
++  result.Append(viewer[prng() % viewer.size()]);
++  return result.ToString();
++}
++
++} //namespace
++
+ String DOMPlugin::name() const {
+-  return plugin_info_->Name();
++  uint32_t fingerprint = GetFingerprint();
++  if (!fingerprint)
++    return plugin_info_->Name();
++
++  // Combine fingerprint with hash of original name
++  uint32_t name_hash = HashString(plugin_info_->Name());
++  uint32_t final_seed = fingerprint ^ name_hash;
++
++  return GetRandomPluginName(final_seed);
+ }
+ 
+ String DOMPlugin::filename() const {
+@@ -44,7 +108,8 @@ String DOMPlugin::filename() const {
+ }
+ 
+ String DOMPlugin::description() const {
+-  return plugin_info_->Description();
++  // return plugin_info_->Description();
++  return "internal-pdf-viewer";
+ }
+ 
+ unsigned DOMPlugin::length() const {

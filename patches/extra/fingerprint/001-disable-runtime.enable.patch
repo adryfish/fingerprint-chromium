@@ -1,0 +1,66 @@
+diff --git a/v8/src/inspector/v8-runtime-agent-impl.cc b/v8/src/inspector/v8-runtime-agent-impl.cc
+index 97411218b7..7faa2a4ee3 100644
+--- a/v8/src/inspector/v8-runtime-agent-impl.cc
++++ b/v8/src/inspector/v8-runtime-agent-impl.cc
+@@ -1019,22 +1019,23 @@ void V8RuntimeAgentImpl::bindingCalled(const String16& name,
+ 
+ void V8RuntimeAgentImpl::addBindings(InspectedContext* context) {
+   const String16 contextName = context->humanReadableName();
+-  if (!m_enabled) return;
+-  protocol::DictionaryValue* bindings =
+-      m_state->getObject(V8RuntimeAgentImplState::bindings);
+-  if (!bindings) return;
+-  protocol::DictionaryValue* globalBindings =
+-      bindings->getObject(V8RuntimeAgentImplState::globalBindingsKey);
+-  if (globalBindings) {
+-    for (size_t i = 0; i < globalBindings->size(); ++i)
+-      addBinding(context, globalBindings->at(i).first);
+-  }
+-  protocol::DictionaryValue* contextBindings =
+-      contextName.isEmpty() ? nullptr : bindings->getObject(contextName);
+-  if (contextBindings) {
+-    for (size_t i = 0; i < contextBindings->size(); ++i)
+-      addBinding(context, contextBindings->at(i).first);
+-  }
++  return;
++  // if (!m_enabled) return;
++  // protocol::DictionaryValue* bindings =
++  //     m_state->getObject(V8RuntimeAgentImplState::bindings);
++  // if (!bindings) return;
++  // protocol::DictionaryValue* globalBindings =
++  //     bindings->getObject(V8RuntimeAgentImplState::globalBindingsKey);
++  // if (globalBindings) {
++  //   for (size_t i = 0; i < globalBindings->size(); ++i)
++  //     addBinding(context, globalBindings->at(i).first);
++  // }
++  // protocol::DictionaryValue* contextBindings =
++  //     contextName.isEmpty() ? nullptr : bindings->getObject(contextName);
++  // if (contextBindings) {
++  //   for (size_t i = 0; i < contextBindings->size(); ++i)
++  //     addBinding(context, contextBindings->at(i).first);
++  // }
+ }
+ 
+ void V8RuntimeAgentImpl::restore() {
+@@ -1147,7 +1148,7 @@ void V8RuntimeAgentImpl::inspect(
+ }
+ 
+ void V8RuntimeAgentImpl::messageAdded(V8ConsoleMessage* message) {
+-  if (m_enabled) reportMessage(message, true);
++  // if (m_enabled) reportMessage(message, true);
+ }
+ 
+ bool V8RuntimeAgentImpl::reportMessage(V8ConsoleMessage* message,
+diff --git a/v8/src/inspector/v8-runtime-agent-impl.h b/v8/src/inspector/v8-runtime-agent-impl.h
+index 6587915e7e..74badf8fa3 100644
+--- a/v8/src/inspector/v8-runtime-agent-impl.h
++++ b/v8/src/inspector/v8-runtime-agent-impl.h
+@@ -144,7 +144,7 @@ class V8RuntimeAgentImpl : public protocol::Runtime::Backend {
+                std::unique_ptr<protocol::DictionaryValue> hints,
+                int executionContextId);
+   void messageAdded(V8ConsoleMessage*);
+-  bool enabled() const { return m_enabled; }
++  bool enabled() const { return false; }
+ 
+  private:
+   bool reportMessage(V8ConsoleMessage*, bool generatePreview);

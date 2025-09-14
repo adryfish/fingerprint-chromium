@@ -1,0 +1,51 @@
+diff --git a/third_party/blink/renderer/core/frame/navigator_concurrent_hardware.cc b/third_party/blink/renderer/core/frame/navigator_concurrent_hardware.cc
+index f5c0db2d1b..34ad90de8e 100644
+--- a/third_party/blink/renderer/core/frame/navigator_concurrent_hardware.cc
++++ b/third_party/blink/renderer/core/frame/navigator_concurrent_hardware.cc
+@@ -3,12 +3,30 @@
+ // found in the LICENSE file.
+ 
+ #include "third_party/blink/renderer/core/frame/navigator_concurrent_hardware.h"
+-
+ #include "base/system/sys_info.h"
++#include "base/command_line.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ 
+ namespace blink {
+ 
+ unsigned NavigatorConcurrentHardware::hardwareConcurrency() const {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++
++  // 首先检查直接指定的硬件并发数
++  if (command_line->HasSwitch(switches::kFingerprintHardwareConcurrency)) {
++    std::string value = command_line->GetSwitchValueASCII(switches::kFingerprintHardwareConcurrency);
++    unsigned long custom_concurrency = std::stoul(value);
++    return static_cast<unsigned>(custom_concurrency);
++  }
++
++  // 如果没有直接指定，则从fingerprint命令行参数计算
++  if (command_line->HasSwitch(switches::kFingerprint)) {
++    std::string fingerprint_str = command_line->GetSwitchValueASCII(switches::kFingerprint);
++    uint32_t fingerprint = static_cast<uint32_t>(std::stoull(fingerprint_str));
++    return static_cast<unsigned>(((fingerprint % 13) + 4) * 2);
++  }
++
++  // 如果都没有指定，返回实际的处理器数量
+   return static_cast<unsigned>(base::SysInfo::NumberOfProcessors());
+ }
+ 
+diff --git a/third_party/blink/renderer/core/frame/navigator_device_memory.cc b/third_party/blink/renderer/core/frame/navigator_device_memory.cc
+index 2876aad298..e487401680 100644
+--- a/third_party/blink/renderer/core/frame/navigator_device_memory.cc
++++ b/third_party/blink/renderer/core/frame/navigator_device_memory.cc
+@@ -14,7 +14,9 @@
+ namespace blink {
+ 
+ float NavigatorDeviceMemory::deviceMemory() const {
+-  return ApproximatedDeviceMemory::GetApproximatedDeviceMemory();
++  // 历史原因，内存最大是8
++  return 8;
++  // return ApproximatedDeviceMemory::GetApproximatedDeviceMemory();
+ }
+ 
+ }  // namespace blink

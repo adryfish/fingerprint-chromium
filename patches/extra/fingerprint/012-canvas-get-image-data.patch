@@ -1,0 +1,343 @@
+diff --git a/third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc b/third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc
+index 87acf13d4b..94b5e9205a 100644
+--- a/third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc
++++ b/third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc
+@@ -13,6 +13,7 @@
+ 
+ #include "base/check.h"
+ #include "base/check_op.h"
++#include "base/command_line.h"
+ #include "base/location.h"
+ #include "base/memory/scoped_refptr.h"
+ #include "base/memory/weak_ptr.h"
+@@ -26,6 +27,7 @@
+ #include "cc/paint/paint_canvas.h"
+ #include "cc/paint/paint_flags.h"
+ #include "cc/paint/paint_image.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "components/viz/common/resources/shared_image_format_utils.h"
+ #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+ #include "third_party/blink/public/common/metrics/document_update_reason.h"
+@@ -599,7 +601,9 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
+           snapshot->PaintImageForCurrentFrame().GetSkImageInfo().bounds();
+       DCHECK(!bounds.intersect(SkIRect::MakeXYWH(sx, sy, sw, sh)));
+     }
+-    if (read_pixels_successful && RuntimeEnabledFeatures::FingerprintingCanvasImageDataNoiseEnabled()) {
++
++    const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++    if (read_pixels_successful && command_line->HasSwitch(switches::kFingerprint)) {
+       StaticBitmapImage::ShuffleSubchannelColorData(image_data_pixmap.addr(), image_data_pixmap.info(), sx, sy);
+     }
+   }
+@@ -1291,7 +1295,8 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
+           : nullptr);
+ 
+   // Scale text metrics if enabled
+-  if (RuntimeEnabledFeatures::FingerprintingCanvasMeasureTextNoiseEnabled()) {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
+     if (HostAsOffscreenCanvas()) {
+       if (auto* window = DynamicTo<LocalDOMWindow>(GetTopExecutionContext())) {
+         if (window->GetFrame() && window->GetFrame()->GetDocument())
+diff --git a/third_party/blink/renderer/platform/graphics/image_data_buffer.cc b/third_party/blink/renderer/platform/graphics/image_data_buffer.cc
+index e24bd9f09f..b8397d7c5b 100644
+--- a/third_party/blink/renderer/platform/graphics/image_data_buffer.cc
++++ b/third_party/blink/renderer/platform/graphics/image_data_buffer.cc
+@@ -32,8 +32,11 @@
+ 
+ #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
+ 
++#include "base/command_line.h"
+ #include "base/compiler_specific.h"
+ #include "base/memory/ptr_util.h"
++#include "components/ungoogled/ungoogled_switches.h"
++#include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+ #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
+ #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+ #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+@@ -130,6 +133,11 @@ base::span<const uint8_t> ImageDataBuffer::PixelData() const {
+ bool ImageDataBuffer::EncodeImage(const ImageEncodingMimeType mime_type,
+                                   const double& quality,
+                                   Vector<unsigned char>* encoded_image) const {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
++    // shuffle subchannel color data within the pixmap
++    StaticBitmapImage::ShuffleSubchannelColorData(pixmap_.writable_addr(), pixmap_.info(), 0, 0);
++  }
+   return ImageEncoder::Encode(encoded_image, pixmap_, mime_type, quality);
+ }
+ 
+diff --git a/third_party/blink/renderer/platform/graphics/static_bitmap_image.cc b/third_party/blink/renderer/platform/graphics/static_bitmap_image.cc
+index db103dba87..5243eacd3b 100644
+--- a/third_party/blink/renderer/platform/graphics/static_bitmap_image.cc
++++ b/third_party/blink/renderer/platform/graphics/static_bitmap_image.cc
+@@ -4,9 +4,11 @@
+ 
+ #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+ 
++#include "base/command_line.h"
+ #include "base/rand_util.h"
+ #include "base/logging.h"
+ #include "base/numerics/checked_math.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "gpu/command_buffer/client/gles2_interface.h"
+ #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
+ #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+@@ -131,15 +133,10 @@ void StaticBitmapImage::ShuffleSubchannelColorData(const void *addr, const SkIma
+     return;
+   }
+ 
+-  // generate the first random number here
+-  double shuffleX = base::RandDouble();
+-
+-  // cap maximum pixels to change
+-  auto pixels = (w + h) / 128;
+-  if (pixels > 10) {
+-    pixels = 10;
+-  } else if (pixels < 2) {
+-    pixels = 2;
++  std::string seed_str = "0";
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
++      seed_str = command_line->GetSwitchValueASCII(switches::kFingerprint);
+   }
+ 
+   auto colorType = info.colorType();
+@@ -147,120 +144,157 @@ void StaticBitmapImage::ShuffleSubchannelColorData(const void *addr, const SkIma
+ 
+   DLOG(INFO) << "BRM: ShuffleSubchannelColorData() w=" << w << " h=" << h << " colorType=" << colorType << " fRowBytes=" << fRowBytes;
+ 
+-  // second random number (for y/height)
+-  double shuffleY = base::RandDouble();
+-
+-  // calculate random coordinates using bisection
+-  auto currentW = w, currentH = h;
+-  for(;pixels >= 0; pixels--) {
+-    int x = currentW * shuffleX, y = currentH * shuffleY;
+-
+-    // calculate randomisation amounts for each RGB component
+-    uint8_t shuffleR = base::RandInt(0, 4);
+-    uint8_t shuffleG = (shuffleR + x) % 4;
+-    uint8_t shuffleB = (shuffleG + y) % 4;
+-
+-    // manipulate pixel data to slightly change the R, G, B components
++  auto pixels = (w * h) / 128;
++  if (pixels > 10) {
++    pixels = 10;
++  } else if (pixels < 2) {
++    pixels = 2;
++  }
++  // 修改全部像素
++  for(int i = 0; i < pixels; i++) {
++    // 使用哈希生成随机位置，避开边缘点
++    std::string x_key = seed_str + "_" + std::to_string(i) + "_x";
++    std::string y_key = seed_str + "_" + std::to_string(i) + "_y";
++
++    // 确保x,y不在边缘 (留出至少1个像素的边距)
++    int x = (std::hash<std::string>{}(x_key) % (w - 2)) + 1;
++    int y = (std::hash<std::string>{}(y_key) % (h - 2)) + 1;
++    // 为当前像素位置和种子组合生成三个不同的哈希值，每个通道使用一个
++    std::string pixel_key_base = seed_str + "_x" + std::to_string(x) + "_y" + std::to_string(y);
++    // 为每个RGB通道生成不同的哈希值
++    std::string pixel_key_r = pixel_key_base + "_r";
++    std::string pixel_key_g = pixel_key_base + "_g";
++    std::string pixel_key_b = pixel_key_base + "_b";
++
++    // 为每个通道生成0-1的值，用于设置最后1位
++    uint8_t shuffleR = std::hash<std::string>{}(pixel_key_r) & 1;
++    uint8_t shuffleG = std::hash<std::string>{}(pixel_key_g) & 1;
++    uint8_t shuffleB = std::hash<std::string>{}(pixel_key_b) & 1;
++
++    // 操作像素数据，对R、G、B分量进行细微修改
+     switch (colorType) {
+       case kAlpha_8_SkColorType:
+       {
+-         auto *pixel = writable_addr(uint8_t, addr, fRowBytes, x, y);
+-         auto r = SkColorGetR(*pixel), g = SkColorGetG(*pixel), b = SkColorGetB(*pixel), a = SkColorGetA(*pixel);
++          auto *pixel = writable_addr(uint8_t, addr, fRowBytes, x, y);
++          auto r = SkColorGetR(*pixel), g = SkColorGetG(*pixel), b = SkColorGetB(*pixel), a = SkColorGetA(*pixel);
+ 
+-         r = shuffleComponent(r, UINT8_MAX-1, shuffleR);
+-         g = shuffleComponent(g, UINT8_MAX-1, shuffleG);
+-         b = shuffleComponent(b, UINT8_MAX-1, shuffleB);
+-         // alpha is left unchanged
++          // 避免修改纯黑色(0,0,0)和纯白色(255,255,255)
++          if ((r == 0 && g == 0 && b == 0) || (r == 255 && g == 255 && b == 255)) {
++            break; // 跳过这个像素
++          }
+ 
+-         *pixel = SkColorSetARGB(a, r, g, b);
++          // 对非纯黑/纯白的像素设置最后1位
++          r = (r & ~0x1) | shuffleR;
++          g = (g & ~0x1) | shuffleG;
++          b = (b & ~0x1) | shuffleB;
++          // alpha不变
++
++          *pixel = SkColorSetARGB(a, r, g, b);
+       }
+       break;
+       case kGray_8_SkColorType:
+       {
+-         auto *pixel = writable_addr(uint8_t, addr, fRowBytes, x, y);
+-         *pixel = shuffleComponent(*pixel, UINT8_MAX-1, shuffleB);
++          auto *pixel = writable_addr(uint8_t, addr, fRowBytes, x, y);
++          // 避免修改纯黑色(0)和纯白色(255)
++          if (*pixel == 0 || *pixel == 255) {
++            break; // 跳过这个像素
++          }
++          // 对其他灰度值设置最后1位
++          *pixel = (*pixel & ~0x1) | shuffleB;
+       }
+       break;
+       case kRGB_565_SkColorType:
+       {
+-         auto *pixel = writable_addr(uint16_t, addr, fRowBytes, x, y);
+-         unsigned    r = SkPacked16ToR32(*pixel);
+-         unsigned    g = SkPacked16ToG32(*pixel);
+-         unsigned    b = SkPacked16ToB32(*pixel);
+-
+-         r = shuffleComponent(r, 31, shuffleR);
+-         g = shuffleComponent(g, 63, shuffleG);
+-         b = shuffleComponent(b, 31, shuffleB);
+-
+-         unsigned r16 = (r & SK_R16_MASK) << SK_R16_SHIFT;
+-         unsigned g16 = (g & SK_G16_MASK) << SK_G16_SHIFT;
+-         unsigned b16 = (b & SK_B16_MASK) << SK_B16_SHIFT;
+-
+-         *pixel = r16 | g16 | b16;
++          auto *pixel = writable_addr(uint16_t, addr, fRowBytes, x, y);
++          unsigned r = SkPacked16ToR32(*pixel);
++          unsigned g = SkPacked16ToG32(*pixel);
++          unsigned b = SkPacked16ToB32(*pixel);
++
++          // 避免修改纯黑色(0,0,0)和纯白色(31,63,31) - RGB565格式的最大值
++          if ((r == 0 && g == 0 && b == 0) || (r == 31 && g == 63 && b == 31)) {
++            break; // 跳过这个像素
++          }
++
++          // 对其他颜色设置最后1位
++          r = (r & ~0x1) | (shuffleR & 0x1);
++          g = (g & ~0x1) | (shuffleG & 0x1);
++          b = (b & ~0x1) | (shuffleB & 0x1);
++
++          unsigned r16 = (r & SK_R16_MASK) << SK_R16_SHIFT;
++          unsigned g16 = (g & SK_G16_MASK) << SK_G16_SHIFT;
++          unsigned b16 = (b & SK_B16_MASK) << SK_B16_SHIFT;
++
++          *pixel = r16 | g16 | b16;
+       }
+       break;
+       case kARGB_4444_SkColorType:
+       {
+-         auto *pixel = writable_addr(uint16_t, addr, fRowBytes, x, y);
+-         auto a = SkGetPackedA4444(*pixel), r = SkGetPackedR4444(*pixel), g = SkGetPackedG4444(*pixel), b = SkGetPackedB4444(*pixel);
+-
+-         r = shuffleComponent(r, 15, shuffleR);
+-         g = shuffleComponent(g, 15, shuffleG);
+-         b = shuffleComponent(b, 15, shuffleB);
+-         // alpha is left unchanged
+-
+-         unsigned a4 = (a & 0xF) << SK_A4444_SHIFT;
+-         unsigned r4 = (r & 0xF) << SK_R4444_SHIFT;
+-         unsigned g4 = (g & 0xF) << SK_G4444_SHIFT;
+-         unsigned b4 = (b & 0xF) << SK_B4444_SHIFT;
+-
+-         *pixel = r4 | b4 | g4 | a4;
++          auto *pixel = writable_addr(uint16_t, addr, fRowBytes, x, y);
++          auto a = SkGetPackedA4444(*pixel), r = SkGetPackedR4444(*pixel), g = SkGetPackedG4444(*pixel), b = SkGetPackedB4444(*pixel);
++
++          // 避免修改纯黑色(0,0,0)和纯白色(15,15,15) - ARGB4444格式的最大值
++          if ((r == 0 && g == 0 && b == 0) || (r == 15 && g == 15 && b == 15)) {
++            break; // 跳过这个像素
++          }
++
++          // 对其他颜色设置最后1位
++          r = (r & ~0x1) | (shuffleR & 0x1);
++          g = (g & ~0x1) | (shuffleG & 0x1);
++          b = (b & ~0x1) | (shuffleB & 0x1);
++          // alpha不变
++
++          unsigned a4 = (a & 0xF) << SK_A4444_SHIFT;
++          unsigned r4 = (r & 0xF) << SK_R4444_SHIFT;
++          unsigned g4 = (g & 0xF) << SK_G4444_SHIFT;
++          unsigned b4 = (b & 0xF) << SK_B4444_SHIFT;
++
++          *pixel = r4 | b4 | g4 | a4;
+       }
+       break;
+       case kRGBA_8888_SkColorType:
+       {
+-         auto *pixel = writable_addr(uint32_t, addr, fRowBytes, x, y);
+-         auto a = SkGetPackedA32(*pixel), r = SkGetPackedR32(*pixel), g = SkGetPackedG32(*pixel), b = SkGetPackedB32(*pixel);
++          auto *pixel = writable_addr(uint32_t, addr, fRowBytes, x, y);
++          auto a = SkGetPackedA32(*pixel), r = SkGetPackedR32(*pixel), g = SkGetPackedG32(*pixel), b = SkGetPackedB32(*pixel);
++
++          // 避免修改纯黑色(0,0,0)和纯白色(255,255,255)
++          if ((r == 0 && g == 0 && b == 0) || (r == 255 && g == 255 && b == 255)) {
++            break; // 跳过这个像素
++          }
+ 
+-         r = shuffleComponent(r, UINT8_MAX-1, shuffleR);
+-         g = shuffleComponent(g, UINT8_MAX-1, shuffleG);
+-         b = shuffleComponent(b, UINT8_MAX-1, shuffleB);
+-         // alpha is left unchanged
++          // 对其他颜色设置最后1位
++          r = (r & ~0x1) | shuffleR;
++          g = (g & ~0x1) | shuffleG;
++          b = (b & ~0x1) | shuffleB;
++          // alpha不变
+ 
+-         *pixel = (a << SK_A32_SHIFT) | (r << SK_R32_SHIFT) |
++          *pixel = (a << SK_A32_SHIFT) | (r << SK_R32_SHIFT) |
+                   (g << SK_G32_SHIFT) | (b << SK_B32_SHIFT);
+       }
+       break;
+       case kBGRA_8888_SkColorType:
+       {
+-         auto *pixel = writable_addr(uint32_t, addr, fRowBytes, x, y);
+-         auto a = SkGetPackedA32(*pixel), b = SkGetPackedR32(*pixel), g = SkGetPackedG32(*pixel), r = SkGetPackedB32(*pixel);
++          auto *pixel = writable_addr(uint32_t, addr, fRowBytes, x, y);
++          auto a = SkGetPackedA32(*pixel), b = SkGetPackedR32(*pixel), g = SkGetPackedG32(*pixel), r = SkGetPackedB32(*pixel);
++
++          // 避免修改纯黑色(0,0,0)和纯白色(255,255,255)
++          if ((r == 0 && g == 0 && b == 0) || (r == 255 && g == 255 && b == 255)) {
++            break; // 跳过这个像素
++          }
+ 
+-         r = shuffleComponent(r, UINT8_MAX-1, shuffleR);
+-         g = shuffleComponent(g, UINT8_MAX-1, shuffleG);
+-         b = shuffleComponent(b, UINT8_MAX-1, shuffleB);
+-         // alpha is left unchanged
++          // 对其他颜色设置最后1位
++          r = (r & ~0x1) | shuffleR;
++          g = (g & ~0x1) | shuffleG;
++          b = (b & ~0x1) | shuffleB;
++          // alpha不变
+ 
+-         *pixel = (a << SK_BGRA_A32_SHIFT) | (r << SK_BGRA_R32_SHIFT) |
++          *pixel = (a << SK_BGRA_A32_SHIFT) | (r << SK_BGRA_R32_SHIFT) |
+                   (g << SK_BGRA_G32_SHIFT) | (b << SK_BGRA_B32_SHIFT);
+       }
+       break;
+       default:
+-         // the remaining formats are not expected to be used in Chromium
+-         LOG(WARNING) << "BRM: ShuffleSubchannelColorData(): Ignoring pixel format";
+-         return;
+-    }
+-
+-    // keep bisecting or reset current width/height as needed
+-    if (x == 0) {
+-       currentW = w;
+-    } else {
+-       currentW = x;
+-    }
+-    if (y == 0) {
+-       currentH = h;
+-    } else {
+-       currentH = y;
++          // 预计Chromium不会使用其他格式
++          LOG(WARNING) << "BRM: ShuffleSubchannelColorData(): Ignoring pixel format";
++          return;
+     }
+   }
+ }

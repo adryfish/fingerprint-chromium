@@ -1,0 +1,187 @@
+diff --git a/third_party/blink/renderer/platform/fonts/font_cache.cc b/third_party/blink/renderer/platform/fonts/font_cache.cc
+index 34603fc206..b6cc3b9116 100644
+--- a/third_party/blink/renderer/platform/fonts/font_cache.cc
++++ b/third_party/blink/renderer/platform/fonts/font_cache.cc
+@@ -32,14 +32,17 @@
+ #include <limits>
+ #include <memory>
+ 
++#include "base/command_line.h"
+ #include "base/debug/alias.h"
+ #include "base/feature_list.h"
+ #include "base/notreached.h"
+ #include "base/strings/escape.h"
++#include "base/strings/string_number_conversions.h"
+ #include "base/system/sys_info.h"
+ #include "base/timer/elapsed_timer.h"
+ #include "base/trace_event/process_memory_dump.h"
+ #include "base/trace_event/trace_event.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "build/build_config.h"
+ #include "skia/ext/font_utils.h"
+ #include "third_party/blink/public/common/features.h"
+@@ -147,6 +150,95 @@ const FontPlatformData* FontCache::SystemFontPlatformData(
+ }
+ #endif
+ 
++// 获取平台特定的字体列表
++static std::vector<std::string> GetPlatformFonts(const std::string& platform) {
++  if (platform == "windows") {
++    return {
++      "Arial", "Arial Black", "Bahnschrift", "Calibri", "Cambria", "Cambria Math",
++      "Candara", "Cascadia Code", "Cascadia Mono", "Comic Sans MS", "Consolas",
++      "Constantia", "Corbel", "Courier New", "Ebrima", "Franklin Gothic Medium",
++      "Gabriola", "Gadugi", "Georgia", "HoloLens MDL2 Assets", "Impact", "Ink Free",
++      "Javanese Text", "Leelawadee UI", "Lucida Console", "Lucida Sans Unicode",
++      "Malgun Gothic", "Marlett", "Microsoft Himalaya", "Microsoft JhengHei",
++      "Microsoft New Tai Lue", "Microsoft PhagsPa", "Microsoft Sans Serif",
++      "Microsoft Tai Le", "Microsoft YaHei", "Microsoft Yi Baiti", "MingLiU-ExtB",
++      "Mongolian Baiti", "MS Gothic", "MV Boli", "Myanmar Text", "Nirmala UI",
++      "Palatino Linotype", "Segoe Fluent Icons", "Segoe MDL2 Assets", "Segoe Print",
++      "Segoe Script", "Segoe UI", "Segoe UI Emoji", "Segoe UI Historic",
++      "Segoe UI Symbol", "Segoe UI Variable", "SimSun", "Sitka", "Sylfaen",
++      "Symbol", "Tahoma", "Times New Roman", "Trebuchet MS", "Verdana",
++      "Webdings", "Wingdings", "Yu Gothic"
++    };
++  } else if (platform == "macos") {
++    return {
++      "Academy Engraved LET", "American Typewriter", "Andale Mono", "Arial", "Arial Narrow",
++      "Arial Rounded MT", "Arial Unicode MS", "Avenir", "Avenir Next", "Baskerville",
++      "Big Caslon", "Bodoni 72", "Bradley Hand", "Brill", "Brush Script MT",
++      "Cambria", "Canela", "Charter", "Chalkboard", "Chalkduster",
++      "Cochin", "Comic Sans MS", "Copperplate", "Courier New", "Didot",
++      "DIN", "Domaine Display", "Euphemia UCAS", "Founders Grotesk", "Futura",
++      "Geneva", "Georgia", "Gill Sans", "Graphik", "Helvetica",
++      "Helvetica Neue", "Herculanum", "Hoefler Text", "Impact", "Lucida Grande",
++      "Luminari", "Marker Felt", "Menlo", "Microsoft Sans Serif", "Monaco",
++      "Noteworthy", "Optima", "Palatino", "Papyrus", "Party LET",
++      "Phosphate", "Plantagenet Cherokee", "Produkt", "Proxima Nova", "PT Mono",
++      "PT Sans", "PT Serif", "Publico", "Quotes", "Rockwell",
++      "Sauber Script", "Savoye LET", "SignPainter", "Skia", "Snell Roundhand",
++      "Spot Mono", "STIX Two", "Symbol", "Tahoma", "Times New Roman",
++      "Trattatello", "Trebuchet MS", "Verdana", "Webdings", "Wingdings",
++      "Zapf Dingbats", "Zapfino"
++    };
++  } else if (platform == "linux") {
++    return {
++      // Ubuntu Font Family
++      "Ubuntu", "Ubuntu Condensed", "Ubuntu Light", "Ubuntu Mono", "Ubuntu Sans", "Ubuntu Sans Mono",
++      // DejaVu Family
++      "DejaVu Sans", "DejaVu Sans Condensed", "DejaVu Sans Light", "DejaVu Sans Mono",
++      "DejaVu Serif", "DejaVu Serif Condensed", "DejaVu Math TeX Gyre",
++      // Liberation Family
++      "Liberation Sans", "Liberation Sans Narrow", "Liberation Serif", "Liberation Mono",
++      // Noto Family
++      "Noto Sans", "Noto Sans Display", "Noto Sans Mono",
++      "Noto Serif", "Noto Serif Display", "Noto Mono", "Noto Color Emoji",
++      // Nimbus Family
++      "Nimbus Sans", "Nimbus Sans L", "Nimbus Sans Narrow", "Nimbus Roman", "Nimbus Roman No9 L",
++      "Nimbus Mono", "Nimbus Mono L", "Nimbus Mono PS",
++      // FreeFont Family
++      "FreeSans", "FreeSerif", "FreeMono"
++    };
++  }
++  return {};
++}
++
++// 判断是否为基础字体（不应被隐藏）
++static bool IsEssentialFont(const std::string& font_family, const std::string& platform) {
++  if (platform == "windows") {
++    const std::vector<std::string> essential = {
++      "Arial", "Times New Roman", "Courier New", "Verdana", "Tahoma",
++      "Segoe UI", "Microsoft Sans Serif", "sans-serif", "serif", "monospace",
++      // 中文字体 - 防止中文乱码
++      "Microsoft YaHei", "SimSun"
++    };
++    return std::find(essential.begin(), essential.end(), font_family) != essential.end();
++  } else if (platform == "macos") {
++    const std::vector<std::string> essential = {
++      "Helvetica", "Helvetica Neue", "Times New Roman", "Courier New",
++      "Monaco", "Menlo", "Arial", "Verdana", "sans-serif", "serif", "monospace",
++      // 中文字体 - 防止中文乱码
++      "PingFang SC", "Heiti SC", "STHeiti", "STSong"
++    };
++    return std::find(essential.begin(), essential.end(), font_family) != essential.end();
++  } else if (platform == "linux") {
++    const std::vector<std::string> essential = {
++      "Liberation Sans", "Liberation Serif", "Liberation Mono",
++      "DejaVu Sans", "DejaVu Serif", "DejaVu Sans Mono",
++      "Ubuntu", "Noto Sans", "sans-serif", "serif", "monospace"
++    };
++    return std::find(essential.begin(), essential.end(), font_family) != essential.end();
++  }
++
++  return false;
++}
+ const FontPlatformData* FontCache::GetFontPlatformData(
+     const FontDescription& font_description,
+     const FontFaceCreationParams& creation_params,
+@@ -158,6 +250,68 @@ const FontPlatformData* FontCache::GetFontPlatformData(
+     PlatformInit();
+   }
+ 
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  // 字体指纹处理逻辑 - 不应用于最后手段字体
++  if (command_line->HasSwitch(switches::kFingerprint) &&
++      creation_params.CreationType() == kCreateFontByFamily &&
++      alternate_font_name != AlternateFontName::kLastResort) {
++    // 检测当前操作系统
++    const char* current_os =
++#if BUILDFLAG(IS_WIN)
++      "windows";
++#elif BUILDFLAG(IS_MAC)
++      "macos";
++#elif BUILDFLAG(IS_LINUX) || BUILDFLAG(IS_CHROMEOS)
++      "linux";
++#else
++      "linux";  // 默认
++#endif
++
++    // 获取当前操作系统的字体列表
++    std::vector<std::string> current_os_fonts = GetPlatformFonts(current_os);
++
++    const std::string requested_family = creation_params.Family().Utf8();
++    std::string spoofed_platform = command_line->GetSwitchValueASCII(switches::kFingerprintPlatform);
++    // 如果没有指定平台，使用当前操作系统作为默认值
++    if (spoofed_platform.empty()) {
++      spoofed_platform = current_os;
++    }
++    // 计算哈希值用于一致性
++    std::string fingerprint = command_line->GetSwitchValueASCII(switches::kFingerprint);
++    uint32_t hash = std::hash<std::string>{}(fingerprint + requested_family);
++    // 判断伪装平台是否与当前系统不同
++    if (spoofed_platform != current_os) {
++      // 获取伪装平台的字体列表
++      std::vector<std::string> platform_fonts = GetPlatformFonts(spoofed_platform);
++      bool is_platform_font = std::find(platform_fonts.begin(), platform_fonts.end(),
++                                        requested_family) != platform_fonts.end();
++      if (is_platform_font) {
++        // 伪装平台的字体，用当前系统的字体替代
++        size_t index = hash % current_os_fonts.size();
++        FontFaceCreationParams substitute_params(AtomicString(current_os_fonts[index].c_str()));
++        return font_platform_data_cache_.GetOrCreateFontPlatformData(
++            this, font_description, substitute_params, alternate_font_name);
++      } else {
++        // 非平台字体处理：95%概率隐藏
++        float probability = static_cast<float>(hash) / static_cast<float>(std::numeric_limits<uint32_t>::max());
++        if (probability < 0.95) {
++          return nullptr;
++        }
++        // 5%概率显示，继续默认流程
++      }
++    } else {
++      // 伪装平台与当前系统相同，随机隐藏5%的字体以生成指纹
++      // 但基础字体不应被隐藏
++      if (!IsEssentialFont(requested_family, spoofed_platform)) {
++        float probability = static_cast<float>(hash) / static_cast<float>(std::numeric_limits<uint32_t>::max());
++        if (probability < 0.05) {
++          return nullptr;
++        }
++      }
++      // 基础字体或95%概率显示，继续默认流程
++    }
++  }
++
+ #if !BUILDFLAG(IS_MAC)
+   if (creation_params.CreationType() == kCreateFontByFamily &&
+       creation_params.Family() == font_family_names::kSystemUi) {

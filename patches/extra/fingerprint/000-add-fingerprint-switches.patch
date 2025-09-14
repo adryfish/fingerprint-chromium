@@ -1,0 +1,71 @@
+diff --git a/components/ungoogled/ungoogled_switches.cc b/components/ungoogled/ungoogled_switches.cc
+index c2f9515e91..9a5ee1a7a1 100644
+--- a/components/ungoogled/ungoogled_switches.cc
++++ b/components/ungoogled/ungoogled_switches.cc
+@@ -15,4 +15,28 @@ const char kFingerprintingCanvasMeasureTextNoise[] = "fingerprinting-canvas-meas
+ // Enable fingerprinting deception for Canvas image data
+ const char kFingerprintingCanvasImageDataNoise[] = "fingerprinting-canvas-image-data-noise";
+ 
++// Specify the fingerprint seed
++const char kFingerprint[] = "fingerprint";
++
++// Specify the browser brand
++const char kFingerprintBrand[] = "fingerprint-brand";
++
++// Specify the browser version
++const char kFingerprintBrandVersion[] = "fingerprint-brand-version";
++
++// Specify the GPU VENDOR
++const char kFingerprintGpuVendor[] = "fingerprint-gpu-vendor";
++
++// Specify the GPU RENDERER
++const char kFingerprintGpuRenderer[] = "fingerprint-gpu-renderer";
++
++// Specify the number of CPU cores
++const char kFingerprintHardwareConcurrency[] = "fingerprint-hardware-concurrency";
++
++// Specify the operating system type
++const char kFingerprintPlatform[] = "fingerprint-platform";
++
++// Specify the operating system version
++const char kFingerprintPlatformVersion[] = "fingerprint-platform-version";
++
+ }  // namespace switches
+diff --git a/components/ungoogled/ungoogled_switches.h b/components/ungoogled/ungoogled_switches.h
+index 7dace11f70..5cc2775684 100644
+--- a/components/ungoogled/ungoogled_switches.h
++++ b/components/ungoogled/ungoogled_switches.h
+@@ -15,6 +15,14 @@ COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintingClientRectsNoise[];
+ COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintingCanvasMeasureTextNoise[];
+ COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintingCanvasImageDataNoise[];
+ 
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprint[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintBrand[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintBrandVersion[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintGpuVendor[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintGpuRenderer[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintHardwareConcurrency[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintPlatform[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintPlatformVersion[];
+ }
+ 
+ #endif  // THIRD_PARTY_UNGOOGLED_FINGERPRINTING_SWITCHES_H_
+diff --git a/content/browser/renderer_host/render_process_host_impl.cc b/content/browser/renderer_host/render_process_host_impl.cc
+index 82a20c1ea8..00b65a6ce9 100644
+--- a/content/browser/renderer_host/render_process_host_impl.cc
++++ b/content/browser/renderer_host/render_process_host_impl.cc
+@@ -3416,6 +3416,14 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
+       switches::kFingerprintingClientRectsNoise,
+       switches::kFingerprintingCanvasMeasureTextNoise,
+       switches::kFingerprintingCanvasImageDataNoise,
++      switches::kFingerprint,
++      switches::kFingerprintBrand,
++      switches::kFingerprintBrandVersion,
++      switches::kFingerprintGpuVendor,
++      switches::kFingerprintGpuRenderer,
++      switches::kFingerprintHardwareConcurrency,
++      switches::kFingerprintPlatform,
++      switches::kFingerprintPlatformVersion,
+       switches::kForceDeviceScaleFactor,
+       switches::kForceDisplayColorProfile,
+       switches::kForceGpuMemAvailableMb,
