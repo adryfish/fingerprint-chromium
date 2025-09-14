@@ -12,7 +12,8 @@ Please download the version suitable for your system from the links below. Each 
 
 | **Version**      | **Source Code**                                                                                      | **Windows**                                                                                   | **Linux** | **MacOS**                                                                                   |
 |------------------|------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
-| **Chrome 138**   | Released with Chrome 139        | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_windows_x64.zip) | [138.0.7204.183-1_linux.tar.xz](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1_linux.tar.xz) | |
+| **Chrome 139**   | Released with Chrome 140                                                                            | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64_linux.tar.xz) | [139.0.7258.154-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_macos.dmg) |
+| **Chrome 138**   | [138.0.7204.183](https://github.com/adryfish/fingerprint-chromium/tree/138.0.7204.183)              | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_windows_x64.zip) | [138.0.7204.183-1_linux.tar.xz](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1_linux.tar.xz) | |
 | **Chrome 136**   | [136.0.7103.113](https://github.com/adryfish/fingerprint-chromium/tree/136.0.7103.113)        | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_windows_x64.zip) | [136.0.7103.113-1_linux.tar.xz](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1_linux.tar.xz) | [136.0.7103.113-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_macos.dmg) |
 | **Chrome 135**   | [135.0.7049.95](https://github.com/adryfish/fingerprint-chromium/tree/135.0.7049.95)        | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_windows_x64.zip) | [135.0.7049.95-1_linux.tar.xz](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1_linux.tar.xz) | [135.0.7049.95-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_macos.dmg) |
 | **Chrome 134** | [134.0.6998.165](https://github.com/adryfish/fingerprint-chromium/tree/134.0.6998.165) | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/134.0.6998.165/ungoogled-chromium_134.0.6998.165-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/134.0.6998.165/ungoogled-chromium_134.0.6998.165-1.1_windows_x64.zip) | [134.0.6998.165-1_linux.tar.xz](https://github.com/adryfish/fingerprint-chromium/releases/download/134.0.6998.165/ungoogled-chromium_134.0.6998.165-1_linux.tar.xz) | |
@@ -127,15 +128,33 @@ You can enable or customize fingerprinting and privacy protection features by pa
 | **`--fingerprint-brand`** | Specifies the browser brand in `User-Agent` and `User-Agent Data` | Chrome, Edge, Opera, Vivaldi (default is Chrome) |
 | **`--fingerprint-brand-version`** | Specifies the version number for the browser brand | Uses default version if not specified |
 | **`--fingerprint-hardware-concurrency`** | Specifies the number of CPU cores | Integer value (randomly generated from fingerprint seed if not provided) |
+| **`--fingerprint-gpu-vendor`** | Optional: Customize GPU vendor for WebGL fingerprinting (Chrome 139+) | Vendor string (e.g., `Intel Inc.`, `NVIDIA Corporation`). If not specified, uses fingerprint seed |
+| **`--fingerprint-gpu-renderer`** | Optional: Customize GPU renderer/model for WebGL fingerprinting (Chrome 139+) | Renderer string (e.g., `Intel Iris OpenGL Engine`, `NVIDIA GeForce GTX 1060`). If not specified, uses fingerprint seed |
 | **`--disable-non-proxied-udp`** | Specifies WebRTC policy, by default non-proxied UDP connections are disabled | Recommended to keep default setting |
 | **`--lang`** | Sets the browser language | Language code (e.g., `en-US`) |
 | **`--accept-lang`** | Sets the languages accepted by the browser | Language codes (e.g., `en-US,en`) |
 | **`--timezone`** | timezone | Timezone (e.g., `Asia/Shanghai`, `UTC`) |
 | **`--proxy-server`** | proxy server| `http`, `socks` proxy (password authentication not supported) |
 
-### **New User-Agent Customization Command Line Arguments**
+### **New Command Line Arguments in Chrome 139**
 
-Chrome 131 introduces two new command line arguments for advanced customization of `User-Agent` and `User-Agent Data`:
+**GPU Fingerprinting Parameters**
+
+Starting from Chrome 139, GPU fingerprinting is automatically enabled when using the `--fingerprint` parameter. The following optional parameters allow for custom GPU configuration:
+
+- **`--fingerprint-gpu-vendor`** (Optional)
+  - Customize the GPU vendor string for WebGL fingerprinting.
+  - Examples: `Intel Inc.`, `NVIDIA Corporation`, `AMD`, `Apple`
+  - If not specified, GPU vendor will be automatically generated based on the fingerprint seed.
+
+- **`--fingerprint-gpu-renderer`** (Optional)
+  - Customize the GPU renderer/model string for WebGL fingerprinting.
+  - Examples: `Intel Iris OpenGL Engine`, `NVIDIA GeForce GTX 1060`, `AMD Radeon RX 580`
+  - If not specified, GPU renderer will be automatically generated based on the fingerprint seed.
+
+### **User-Agent Customization Command Line Arguments (Chrome 131)**
+
+Chrome 131 introduced two command line arguments for advanced customization of `User-Agent` and `User-Agent Data`:
 
 - **`--fingerprint-brand`**
   - Specifies the browser brand used in `User-Agent` and `User-Agent Data`.

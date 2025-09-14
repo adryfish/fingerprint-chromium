@@ -8,8 +8,9 @@
 请从以下链接下载适配您系统的版本，每个大版本的 Chromium 会编译一个对应的版本，选择适合的操作系统和版本进行下载：
 
 | **版本**        | **源码**                                                                                   | **Windows**                                                                                   | **Linux**                                                                                   | **MacOS**     |
-|------------------|--------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------| ---------------------------------------------------------------------------------------------|
-| **Chrome 138**   | 跟随Chrome 139发布              | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_windows_x64.zip) | [ 138.0.7204.183-1_linux.tar.xz ](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1_linux.tar.xz) |  |
+|------------------|--------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
+| **Chrome 139**   | 跟随Chrome 140发布                                                                         | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64_linux.tar.xz) | [139.0.7258.154-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_macos.dmg) |
+| **Chrome 138**   | [138.0.7204.183](https://github.com/adryfish/fingerprint-chromium/tree/138.0.7204.183)    | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_windows_x64.zip) | [ 138.0.7204.183-1_linux.tar.xz ](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1_linux.tar.xz) |  |
 | **Chrome 136**   | [136.0.7103.113](https://github.com/adryfish/fingerprint-chromium/tree/136.0.7103.113)              | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_windows_x64.zip) | [ 136.0.7103.113-1_linux.tar.xz ](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1_linux.tar.xz) | [136.0.7103.113-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_macos.dmg) |
 | **Chrome 135**   | [135.0.7049.95](https://github.com/adryfish/fingerprint-chromium/tree/135.0.7049.95)               | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_windows_x64.zip) | [ 135.0.7049.95-1_linux.tar.xz ](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1_linux.tar.xz) | [135.0.7049.95-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_macos.dmg) |
 | **Chrome 134**   | [134.0.6998.165](https://github.com/adryfish/fingerprint-chromium/tree/134.0.6998.165)               | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/134.0.6998.165/ungoogled-chromium_134.0.6998.165-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/134.0.6998.165/ungoogled-chromium_134.0.6998.165-1.1_windows_x64.zip) | [ 134.0.6998.165-1_linux.tar.xz ](https://github.com/adryfish/fingerprint-chromium/releases/download/134.0.6998.165/ungoogled-chromium_134.0.6998.165-1_linux.tar.xz) |  |
@@ -126,13 +127,31 @@
 | **`--fingerprint-brand`** | 指定 `User-Agent` 和 `User-Agent Data` 中的浏览器品牌 | Chrome, Edge, Opera, Vivaldi (默认Chrome) |
 | **`--fingerprint-brand-version`** | 指定品牌的版本号 | 不填时使用默认版本 |
 | **`--fingerprint-hardware-concurrency`** | 指定 CPU 核心数 | 整数值（不提供时由指纹种子随机生成） |
+| **`--fingerprint-gpu-vendor`** | 可选：自定义WebGL指纹的GPU供应商信息（Chrome 139+） | 供应商字符串（如`Intel Inc.`、`NVIDIA Corporation`）。未指定时使用指纹种子自动生成 |
+| **`--fingerprint-gpu-renderer`** | 可选：自定义WebGL指纹的GPU渲染器/型号信息（Chrome 139+） | 渲染器字符串（如`Intel Iris OpenGL Engine`、`NVIDIA GeForce GTX 1060`）。未指定时使用指纹种子自动生成 |
 | **`--disable-non-proxied-udp`** | 指定 WebRTC 策略，默认是禁用非代理 UDP 连接 | 建议保持默认设置 |
 | **`--lang`** | 设置浏览器的语言 | 语言代码（如 `zh-CN`） |
 | **`--accept-lang`** | 设置浏览器接受的语言 | 语言代码（如 `zh-CN,en-US`） |
 | **`--timezone`** | 设置时区 | 时区（如`Asia/Shanghai`, `UTC`） |
 | **`--proxy-server`** | 设置代理 | `http`, `socks`代理(不支持密码验证) |
 
-### **新增的 User-Agent 自定义命令行参数**
+### **Chrome 139 新增命令行参数**
+
+**GPU指纹参数**
+
+从Chrome 139开始，使用`--fingerprint`参数时会自动启用GPU指纹功能。以下可选参数允许自定义GPU配置：
+
+- **`--fingerprint-gpu-vendor`**（可选）
+  - 自定义WebGL指纹的GPU供应商字符串。
+  - 示例：`Intel Inc.`、`NVIDIA Corporation`、`AMD`、`Apple`
+  - 如果未指定，GPU供应商将根据指纹种子自动生成。
+
+- **`--fingerprint-gpu-renderer`**（可选）
+  - 自定义WebGL指纹的GPU渲染器/型号字符串。
+  - 示例：`Intel Iris OpenGL Engine`、`NVIDIA GeForce GTX 1060`、`AMD Radeon RX 580`
+  - 如果未指定，GPU渲染器将根据指纹种子自动生成。
+
+### **User-Agent 自定义命令行参数（Chrome 131）**
 
 Chrome 131 新增了两个用于进阶自定义 `User-Agent` 和 `User-Agent Data` 的命令行参数：
 
