@@ -1,0 +1,55 @@
+diff --git a/third_party/blink/renderer/core/timezone/timezone_controller.cc b/third_party/blink/renderer/core/timezone/timezone_controller.cc
+index dfe26d2f64..406ccf7b4d 100644
+--- a/third_party/blink/renderer/core/timezone/timezone_controller.cc
++++ b/third_party/blink/renderer/core/timezone/timezone_controller.cc
+@@ -4,7 +4,9 @@
+ 
+ #include "third_party/blink/renderer/core/timezone/timezone_controller.h"
+ 
++#include "base/command_line.h"
+ #include "base/feature_list.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "mojo/public/cpp/bindings/pending_remote.h"
+ #include "mojo/public/cpp/bindings/remote.h"
+ #include "third_party/blink/public/common/thread_safe_browser_interface_broker_proxy.h"
+@@ -60,6 +62,14 @@ String GetTimezoneId(const icu::TimeZone& timezone) {
+ }
+ 
+ String GetCurrentTimezoneId() {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprintTimezone)) {
++    std::string timezone_str = command_line->GetSwitchValueASCII(switches::kFingerprintTimezone);
++    if (!timezone_str.empty()) {
++      return String::FromUTF8(timezone_str);
++    }
++  }
++
+   std::unique_ptr<icu::TimeZone> timezone(icu::TimeZone::createDefault());
+   CHECK(timezone);
+   return GetTimezoneId(*timezone.get());
+@@ -82,9 +92,23 @@ void DispatchTimeZoneChangeEventToFrames() {
+ }
+ 
+ bool SetIcuTimeZoneAndNotifyV8(const String& timezone_id) {
+-  DCHECK(!timezone_id.empty());
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  String actual_timezone_id;
++
++  if (command_line->HasSwitch(switches::kFingerprintTimezone)) {
++    std::string timezone_str = command_line->GetSwitchValueASCII(switches::kFingerprintTimezone);
++    if (!timezone_str.empty()) {
++      actual_timezone_id = String::FromUTF8(timezone_str);
++    } else {
++      actual_timezone_id = timezone_id;
++    }
++  } else {
++    DCHECK(!timezone_id.empty());
++    actual_timezone_id = timezone_id;
++  }
++
+   std::unique_ptr<icu::TimeZone> timezone(icu::TimeZone::createTimeZone(
+-      icu::UnicodeString(timezone_id.Ascii().data(), -1, US_INV)));
++      icu::UnicodeString(actual_timezone_id.Ascii().data(), -1, US_INV)));
+   CHECK(timezone);
+ 
+   if (*timezone == icu::TimeZone::getUnknown())

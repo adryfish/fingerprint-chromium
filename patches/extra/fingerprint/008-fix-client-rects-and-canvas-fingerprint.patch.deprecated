@@ -1,0 +1,252 @@
+diff --git a/third_party/blink/renderer/core/dom/document.cc b/third_party/blink/renderer/core/dom/document.cc
+index 1d87ac4f5a..38a1e53541 100644
+--- a/third_party/blink/renderer/core/dom/document.cc
++++ b/third_party/blink/renderer/core/dom/document.cc
+@@ -35,6 +35,7 @@
+ #include <utility>
+ 
+ #include "base/auto_reset.h"
++#include "base/command_line.h"
+ #include "base/containers/adapters.h"
+ #include "base/containers/contains.h"
+ #include "base/debug/dump_without_crashing.h"
+@@ -49,6 +50,7 @@
+ #include "cc/animation/animation_timeline.h"
+ #include "cc/input/overscroll_behavior.h"
+ #include "cc/input/scroll_snap_data.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "mojo/public/cpp/bindings/lib/wtf_hash_util.h"
+ #include "mojo/public/cpp/bindings/pending_remote.h"
+ #include "mojo/public/cpp/bindings/remote.h"
+@@ -985,10 +987,23 @@ Document::Document(const DocumentInit& initializer,
+   TRACE_EVENT_WITH_FLOW0("blink", "Document::Document", TRACE_ID_LOCAL(this),
+                          TRACE_EVENT_FLAG_FLOW_OUT);
+   DCHECK(agent_);
+-  if (RuntimeEnabledFeatures::FingerprintingClientRectsNoiseEnabled()) {
+-    // Precompute -0.0003% to 0.0003% noise factor for get*ClientRect*() fingerprinting
+-    noise_factor_x_ = 1 + (base::RandDouble() - 0.5) * 0.000003;
+-    noise_factor_y_ = 1 + (base::RandDouble() - 0.5) * 0.000003;
++    const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
++    std::string seed_str = command_line->GetSwitchValueASCII(switches::kFingerprint);
++    // 为x和y使用不同的组合字符串
++    std::string combined_x = seed_str + "canvas_noise_x";
++    std::string combined_y = seed_str + "canvas_noise_y";
++
++    uint32_t hash_val_x = std::hash<std::string>{}(combined_x);
++    uint32_t hash_val_y = std::hash<std::string>{}(combined_y);
++
++    // 映射到[-0.5, 0.5]范围
++    double norm_x = (hash_val_x & 0xFFFFFFFF) / 4294967295.0 - 0.5;
++    double norm_y = (hash_val_y & 0xFFFFFFFF) / 4294967295.0 - 0.5;
++
++    // 计算噪声因子
++    noise_factor_x_ = 1.0 + norm_x * 0.000003;
++    noise_factor_y_ = 1.0 + norm_y * 0.000003;
+   }
+   if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) &&
+       features::kDelayAsyncScriptExecutionDelayByDefaultParam.Get()) {
+diff --git a/third_party/blink/renderer/core/dom/element.cc b/third_party/blink/renderer/core/dom/element.cc
+index 5355838deb..1541d3f307 100644
+--- a/third_party/blink/renderer/core/dom/element.cc
++++ b/third_party/blink/renderer/core/dom/element.cc
+@@ -32,9 +32,11 @@
+ #include <memory>
+ #include <utility>
+ 
++#include "base/command_line.h"
+ #include "base/containers/adapters.h"
+ #include "base/feature_list.h"
+ #include "cc/input/snap_selection_strategy.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "third_party/blink/public/common/features.h"
+ #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+ #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+@@ -3016,7 +3018,8 @@ DOMRectList* Element::getClientRects() {
+   DCHECK(element_layout_object);
+   GetDocument().AdjustQuadsForScrollAndAbsoluteZoom(quads,
+                                                     *element_layout_object);
+-  if (RuntimeEnabledFeatures::FingerprintingClientRectsNoiseEnabled()) {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
+     for (gfx::QuadF& quad : quads) {
+       quad.Scale(GetDocument().GetNoiseFactorX(), GetDocument().GetNoiseFactorY());
+     }
+@@ -3048,7 +3051,8 @@ gfx::RectF Element::GetBoundingClientRectNoLifecycleUpdate() const {
+   DCHECK(element_layout_object);
+   GetDocument().AdjustRectForScrollAndAbsoluteZoom(result,
+                                                    *element_layout_object);
+-  if (RuntimeEnabledFeatures::FingerprintingClientRectsNoiseEnabled()) {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
+     result.Scale(GetDocument().GetNoiseFactorX(), GetDocument().GetNoiseFactorY());
+   }
+   return result;
+diff --git a/third_party/blink/renderer/core/dom/range.cc b/third_party/blink/renderer/core/dom/range.cc
+index cbd50cfd0f..81285d6f13 100644
+--- a/third_party/blink/renderer/core/dom/range.cc
++++ b/third_party/blink/renderer/core/dom/range.cc
+@@ -23,6 +23,8 @@
+  * Boston, MA 02110-1301, USA.
+  */
+ 
++#include "base/command_line.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "third_party/blink/renderer/core/dom/range.h"
+ 
+ #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
+@@ -1646,7 +1648,8 @@ DOMRectList* Range::getClientRects() const {
+   Vector<gfx::QuadF> quads;
+   GetBorderAndTextQuads(quads);
+ 
+-  if (RuntimeEnabledFeatures::FingerprintingClientRectsNoiseEnabled()) {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
+     for (gfx::QuadF& quad : quads) {
+       quad.Scale(owner_document_->GetNoiseFactorX(), owner_document_->GetNoiseFactorY());
+     }
+@@ -1660,7 +1663,8 @@ DOMRect* Range::getBoundingClientRect() const {
+   // impact is understood.
+   SyncScrollAttemptHeuristic::DidAccessScrollOffset();
+   auto rect = BoundingRect();
+-  if (RuntimeEnabledFeatures::FingerprintingClientRectsNoiseEnabled()) {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
+     rect.Scale(owner_document_->GetNoiseFactorX(), owner_document_->GetNoiseFactorY());
+   }
+   return DOMRect::FromRectF(rect);
+diff --git a/third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc b/third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc
+index 31b605ef28..6ffb01bc3c 100644
+--- a/third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc
++++ b/third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc
+@@ -13,6 +13,7 @@
+ 
+ #include "base/check.h"
+ #include "base/check_op.h"
++#include "base/command_line.h"
+ #include "base/location.h"
+ #include "base/memory/scoped_refptr.h"
+ #include "base/memory/weak_ptr.h"
+@@ -26,6 +27,7 @@
+ #include "cc/paint/paint_canvas.h"
+ #include "cc/paint/paint_flags.h"
+ #include "cc/paint/paint_image.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "components/viz/common/resources/shared_image_format_utils.h"
+ #include "third_party/abseil-cpp/absl/cleanup/cleanup.h"
+ #include "third_party/blink/public/common/metrics/document_update_reason.h"
+@@ -555,7 +557,9 @@ ImageData* BaseRenderingContext2D::getImageDataInternal(
+           snapshot->PaintImageForCurrentFrame().GetSkImageInfo().bounds();
+       DCHECK(!bounds.intersect(SkIRect::MakeXYWH(sx, sy, sw, sh)));
+     }
+-    if (read_pixels_successful && RuntimeEnabledFeatures::FingerprintingCanvasImageDataNoiseEnabled()) {
++
++    const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++    if (read_pixels_successful && command_line->HasSwitch(switches::kFingerprint)) {
+       StaticBitmapImage::ShuffleSubchannelColorData(image_data_pixmap.addr(), image_data_pixmap.info(), sx, sy);
+     }
+   }
+@@ -1261,7 +1265,8 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
+           : nullptr);
+ 
+   // Scale text metrics if enabled
+-  if (RuntimeEnabledFeatures::FingerprintingCanvasMeasureTextNoiseEnabled()) {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
+     if (HostAsOffscreenCanvas()) {
+       if (auto* window = DynamicTo<LocalDOMWindow>(GetTopExecutionContext())) {
+         if (window->GetFrame() && window->GetFrame()->GetDocument())
+diff --git a/third_party/blink/renderer/platform/graphics/image_data_buffer.cc b/third_party/blink/renderer/platform/graphics/image_data_buffer.cc
+index 01593413e3..0cd50c5814 100644
+--- a/third_party/blink/renderer/platform/graphics/image_data_buffer.cc
++++ b/third_party/blink/renderer/platform/graphics/image_data_buffer.cc
+@@ -32,8 +32,10 @@
+ 
+ #include "third_party/blink/renderer/platform/graphics/image_data_buffer.h"
+ 
++#include "base/command_line.h"
+ #include "base/compiler_specific.h"
+ #include "base/memory/ptr_util.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "third_party/blink/renderer/platform/image-encoders/image_encoder_utils.h"
+ #include "third_party/blink/renderer/platform/runtime_enabled_features.h"
+ #include "third_party/blink/renderer/platform/wtf/text/base64.h"
+@@ -131,6 +133,11 @@ base::span<const uint8_t> ImageDataBuffer::PixelData() const {
+ bool ImageDataBuffer::EncodeImage(const ImageEncodingMimeType mime_type,
+                                   const double& quality,
+                                   Vector<unsigned char>* encoded_image) const {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
++    // shuffle subchannel color data within the pixmap
++    StaticBitmapImage::ShuffleSubchannelColorData(pixmap_.writable_addr(), pixmap_.info(), 0, 0);
++  }
+   return ImageEncoder::Encode(encoded_image, pixmap_, mime_type, quality);
+ }
+ 
+diff --git a/third_party/blink/renderer/platform/graphics/static_bitmap_image.cc b/third_party/blink/renderer/platform/graphics/static_bitmap_image.cc
+index db103dba87..fc30d19f9e 100644
+--- a/third_party/blink/renderer/platform/graphics/static_bitmap_image.cc
++++ b/third_party/blink/renderer/platform/graphics/static_bitmap_image.cc
+@@ -4,9 +4,11 @@
+ 
+ #include "third_party/blink/renderer/platform/graphics/static_bitmap_image.h"
+ 
++#include "base/command_line.h"
+ #include "base/rand_util.h"
+ #include "base/logging.h"
+ #include "base/numerics/checked_math.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "gpu/command_buffer/client/gles2_interface.h"
+ #include "third_party/blink/renderer/platform/graphics/accelerated_static_bitmap_image.h"
+ #include "third_party/blink/renderer/platform/graphics/graphics_context.h"
+@@ -123,6 +125,7 @@ void StaticBitmapImage::DrawHelper(cc::PaintCanvas* canvas,
+ 
+ #define writable_addr(T, p, stride, x, y) (T*)((const char *)p + y * stride + x * sizeof(T))
+ 
++
+ void StaticBitmapImage::ShuffleSubchannelColorData(const void *addr, const SkImageInfo& info, int srcX, int srcY) {
+   auto w = info.width() - srcX, h = info.height() - srcY;
+ 
+@@ -131,8 +134,17 @@ void StaticBitmapImage::ShuffleSubchannelColorData(const void *addr, const SkIma
+     return;
+   }
+ 
+-  // generate the first random number here
+-  double shuffleX = base::RandDouble();
++  std::string seed_str = "0";
++  uint32_t seed = 0;
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
++      seed_str = command_line->GetSwitchValueASCII(switches::kFingerprint);
++      seed = static_cast<uint32_t>(std::stoul(seed_str));
++  }
++
++  std::string combined_x = seed_str + "canvas_noise_x";
++  uint32_t hash_x = std::hash<std::string>{}(combined_x);
++  double shuffleX = static_cast<double>(hash_x) / static_cast<double>(std::numeric_limits<uint32_t>::max());
+ 
+   // cap maximum pixels to change
+   auto pixels = (w + h) / 128;
+@@ -147,8 +159,11 @@ void StaticBitmapImage::ShuffleSubchannelColorData(const void *addr, const SkIma
+ 
+   DLOG(INFO) << "BRM: ShuffleSubchannelColorData() w=" << w << " h=" << h << " colorType=" << colorType << " fRowBytes=" << fRowBytes;
+ 
+-  // second random number (for y/height)
+-  double shuffleY = base::RandDouble();
++  // 生成确定性的 Y 坐标散列
++  std::string combined_y = seed_str + "canvas_noise_y";
++  uint32_t hash_y = std::hash<std::string>{}(combined_y);
++  double shuffleY = static_cast<double>(hash_y) / static_cast<double>(std::numeric_limits<uint32_t>::max());
++
+ 
+   // calculate random coordinates using bisection
+   auto currentW = w, currentH = h;
+@@ -156,7 +171,7 @@ void StaticBitmapImage::ShuffleSubchannelColorData(const void *addr, const SkIma
+     int x = currentW * shuffleX, y = currentH * shuffleY;
+ 
+     // calculate randomisation amounts for each RGB component
+-    uint8_t shuffleR = base::RandInt(0, 4);
++    uint8_t shuffleR = seed % 4;
+     uint8_t shuffleG = (shuffleR + x) % 4;
+     uint8_t shuffleB = (shuffleG + y) % 4;
+ 

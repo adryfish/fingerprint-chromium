@@ -1,0 +1,217 @@
+diff --git a/third_party/blink/renderer/core/dom/document.cc b/third_party/blink/renderer/core/dom/document.cc
+index ce8ca55cd2..154cc3cac8 100644
+--- a/third_party/blink/renderer/core/dom/document.cc
++++ b/third_party/blink/renderer/core/dom/document.cc
+@@ -35,6 +35,7 @@
+ #include <utility>
+ 
+ #include "base/auto_reset.h"
++#include "base/command_line.h"
+ #include "base/containers/adapters.h"
+ #include "base/containers/contains.h"
+ #include "base/debug/dump_without_crashing.h"
+@@ -49,6 +50,7 @@
+ #include "cc/animation/animation_timeline.h"
+ #include "cc/input/overscroll_behavior.h"
+ #include "cc/input/scroll_snap_data.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "mojo/public/cpp/bindings/lib/wtf_hash_util.h"
+ #include "mojo/public/cpp/bindings/pending_remote.h"
+ #include "mojo/public/cpp/bindings/remote.h"
+@@ -891,10 +893,23 @@ Document::Document(const DocumentInit& initializer,
+   TRACE_EVENT_WITH_FLOW0("blink", "Document::Document", TRACE_ID_LOCAL(this),
+                          TRACE_EVENT_FLAG_FLOW_OUT);
+   DCHECK(agent_);
+-  if (RuntimeEnabledFeatures::FingerprintingClientRectsNoiseEnabled()) {
+-    // Precompute -0.0003% to 0.0003% noise factor for get*ClientRect*() fingerprinting
+-    noise_factor_x_ = 1 + (base::RandDouble() - 0.5) * 0.000003;
+-    noise_factor_y_ = 1 + (base::RandDouble() - 0.5) * 0.000003;
++    const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
++    std::string seed_str = command_line->GetSwitchValueASCII(switches::kFingerprint);
++    // 为x和y使用不同的组合字符串
++    std::string combined_x = seed_str + "offset_x";
++    std::string combined_y = seed_str + "offset_y";
++
++    uint32_t hash_val_x = std::hash<std::string>{}(combined_x);
++    uint32_t hash_val_y = std::hash<std::string>{}(combined_y);
++
++    // 映射到[-0.5, 0.5]范围
++    double norm_x = (hash_val_x & 0xFFFFFFFF) / 4294967295.0 - 0.5;
++    double norm_y = (hash_val_y & 0xFFFFFFFF) / 4294967295.0 - 0.5;
++
++    // 计算很小的偏移量：±0.001像素
++    noise_factor_x_ = norm_x * 0.002;
++    noise_factor_y_ = norm_y * 0.002;
+   }
+   if (base::FeatureList::IsEnabled(features::kDelayAsyncScriptExecution) &&
+       features::kDelayAsyncScriptExecutionDelayByDefaultParam.Get()) {
+diff --git a/third_party/blink/renderer/core/dom/element.cc b/third_party/blink/renderer/core/dom/element.cc
+index e24db842e8..94ef140abf 100644
+--- a/third_party/blink/renderer/core/dom/element.cc
++++ b/third_party/blink/renderer/core/dom/element.cc
+@@ -32,9 +32,11 @@
+ #include <memory>
+ #include <utility>
+ 
++#include "base/command_line.h"
+ #include "base/containers/adapters.h"
+ #include "base/feature_list.h"
+ #include "cc/input/snap_selection_strategy.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "third_party/blink/public/common/features.h"
+ #include "third_party/blink/public/common/privacy_budget/identifiability_metric_builder.h"
+ #include "third_party/blink/public/common/privacy_budget/identifiability_study_settings.h"
+@@ -2943,6 +2945,28 @@ void Element::ClientQuads(Vector<gfx::QuadF>& quads) const {
+   }
+ }
+ 
++bool Element::ShouldSkipClientRectsOffset() const {
++  if (!GetLayoutObject() || !GetLayoutObject()->Style()) {
++    return false;
++  }
++
++  const ComputedStyle& style = *GetLayoutObject()->Style();
++
++  // 检查是否为绝对定位
++  if (style.GetPosition() != EPosition::kAbsolute) {
++    return false;
++  }
++
++  // 检查top和left是否都是"确定的"值（Zero或Fixed）
++  const Length& top = style.Top();
++  const Length& left = style.Left();
++
++  bool top_is_deterministic = top.IsZero() || top.IsFixed();
++  bool left_is_deterministic = left.IsZero() || left.IsFixed();
++
++  return (top_is_deterministic && left_is_deterministic);
++}
++
+ DOMRectList* Element::getClientRects() {
+   // TODO(crbug.com/1499981): This should be removed once synchronized scrolling
+   // impact is understood.
+@@ -2959,9 +2983,12 @@ DOMRectList* Element::getClientRects() {
+   DCHECK(element_layout_object);
+   GetDocument().AdjustQuadsForScrollAndAbsoluteZoom(quads,
+                                                     *element_layout_object);
+-  if (RuntimeEnabledFeatures::FingerprintingClientRectsNoiseEnabled()) {
+-    for (gfx::QuadF& quad : quads) {
+-      quad.Scale(GetDocument().GetNoiseFactorX(), GetDocument().GetNoiseFactorY());
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
++    if (!ShouldSkipClientRectsOffset()) {
++      for (gfx::QuadF& quad : quads) {
++        quad.Offset(GetDocument().GetNoiseFactorX(), GetDocument().GetNoiseFactorY());
++      }
+     }
+   }
+   return MakeGarbageCollected<DOMRectList>(quads);
+@@ -2991,8 +3018,11 @@ gfx::RectF Element::GetBoundingClientRectNoLifecycleUpdate() const {
+   DCHECK(element_layout_object);
+   GetDocument().AdjustRectForScrollAndAbsoluteZoom(result,
+                                                    *element_layout_object);
+-  if (RuntimeEnabledFeatures::FingerprintingClientRectsNoiseEnabled()) {
+-    result.Scale(GetDocument().GetNoiseFactorX(), GetDocument().GetNoiseFactorY());
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
++    if (!ShouldSkipClientRectsOffset()) {
++      result.Offset(GetDocument().GetNoiseFactorX(), GetDocument().GetNoiseFactorY());
++    }
+   }
+   return result;
+ }
+diff --git a/third_party/blink/renderer/core/dom/element.h b/third_party/blink/renderer/core/dom/element.h
+index 96cb3204fb..3243877c7d 100644
+--- a/third_party/blink/renderer/core/dom/element.h
++++ b/third_party/blink/renderer/core/dom/element.h
+@@ -537,6 +537,8 @@ class CORE_EXPORT Element : public ContainerNode, public Animatable {
+   // TODO(crbug.com/41417572): This method should replace the above method.
+   gfx::Rect VisibleBoundsRespectingClipsInLocalRoot() const;
+ 
++  bool ShouldSkipClientRectsOffset() const;
++
+   DOMRectList* getClientRects();
+   // Returns a rectangle in zoomed pixel units.
+   gfx::RectF GetBoundingClientRectNoLifecycleUpdateNoAdjustment() const;
+diff --git a/third_party/blink/renderer/core/dom/range.cc b/third_party/blink/renderer/core/dom/range.cc
+index fc10684a4a..fbaad924f2 100644
+--- a/third_party/blink/renderer/core/dom/range.cc
++++ b/third_party/blink/renderer/core/dom/range.cc
+@@ -23,6 +23,8 @@
+  * Boston, MA 02110-1301, USA.
+  */
+ 
++#include "base/command_line.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "third_party/blink/renderer/core/dom/range.h"
+ 
+ #include "third_party/blink/renderer/core/display_lock/display_lock_document_state.h"
+@@ -1648,9 +1650,10 @@ DOMRectList* Range::getClientRects() const {
+   Vector<gfx::QuadF> quads;
+   GetBorderAndTextQuads(quads);
+ 
+-  if (RuntimeEnabledFeatures::FingerprintingClientRectsNoiseEnabled()) {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
+     for (gfx::QuadF& quad : quads) {
+-      quad.Scale(owner_document_->GetNoiseFactorX(), owner_document_->GetNoiseFactorY());
++      quad.Offset(owner_document_->GetNoiseFactorX(), owner_document_->GetNoiseFactorY());
+     }
+   }
+ 
+@@ -1662,8 +1665,9 @@ DOMRect* Range::getBoundingClientRect() const {
+   // impact is understood.
+   SyncScrollAttemptHeuristic::DidAccessScrollOffset();
+   auto rect = BoundingRect();
+-  if (RuntimeEnabledFeatures::FingerprintingClientRectsNoiseEnabled()) {
+-    rect.Scale(owner_document_->GetNoiseFactorX(), owner_document_->GetNoiseFactorY());
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++  if (command_line->HasSwitch(switches::kFingerprint)) {
++    rect.Offset(owner_document_->GetNoiseFactorX(), owner_document_->GetNoiseFactorY());
+   }
+   return DOMRect::FromRectF(rect);
+ }
+diff --git a/ui/gfx/geometry/quad_f.cc b/ui/gfx/geometry/quad_f.cc
+index b6306c2cc5..da400b46f5 100644
+--- a/ui/gfx/geometry/quad_f.cc
++++ b/ui/gfx/geometry/quad_f.cc
+@@ -137,6 +137,22 @@ void QuadF::Scale(float x_scale, float y_scale) {
+   p4_.Scale(x_scale, y_scale);
+ }
+ 
++void QuadF::Offset(float x_offset, float y_offset) {
++  // 计算轴对齐边界框的宽高
++  const auto [min, max] = Extents();
++  float width = max.x() - min.x();
++  float height = max.y() - min.y();
++
++  if (WithinEpsilon(width, 0.0f) || WithinEpsilon(height, 0.0f)) {
++    return;
++  }
++
++  p1_.Offset(x_offset, y_offset);
++  p2_.Offset(x_offset, y_offset);
++  p3_.Offset(x_offset, y_offset);
++  p4_.Offset(x_offset, y_offset);
++}
++
+ void QuadF::operator+=(const Vector2dF& rhs) {
+   p1_ += rhs;
+   p2_ += rhs;
+diff --git a/ui/gfx/geometry/quad_f.h b/ui/gfx/geometry/quad_f.h
+index c9d21e3519..7742aaf590 100644
+--- a/ui/gfx/geometry/quad_f.h
++++ b/ui/gfx/geometry/quad_f.h
+@@ -106,6 +106,11 @@ class COMPONENT_EXPORT(GEOMETRY) QuadF {
+   // Scale each point in the quad by the scale factors along each axis.
+   void Scale(float x_scale, float y_scale);
+ 
++  // Offset each point in the quad by the offset values.
++  void Offset(float offset) { Offset(offset, offset); }
++  // Offset each point in the quad by the offset values along each axis.
++  void Offset(float x_offset, float y_offset);
++
+   // Tests whether any part of the rectangle intersects with this quad.
+   // This only works for convex quads.
+   // This intersection is edge-inclusive and will return true even if the

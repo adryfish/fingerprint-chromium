@@ -1,0 +1,52 @@
+diff --git a/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc b/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc
+index 8e1e65e69b..4daaed10a1 100644
+--- a/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc
++++ b/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc
+@@ -29,6 +29,7 @@
+ #include <utility>
+ 
+ #include "base/bit_cast.h"
++#include "base/command_line.h"
+ #include "base/compiler_specific.h"
+ #include "base/containers/contains.h"
+ #include "base/feature_list.h"
+@@ -41,6 +42,7 @@
+ #include "base/task/single_thread_task_runner.h"
+ #include "base/trace_event/trace_event.h"
+ #include "build/build_config.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ #include "device/vr/buildflags/buildflags.h"
+ #include "device/vr/public/mojom/vr_service.mojom-blink-forward.h"
+ #include "gpu/GLES2/gl2extchromium.h"
+@@ -5233,6 +5235,31 @@ void WebGLRenderingContextBase::ReadPixelsHelper(GLint x,
+     }
+     ContextGL()->ReadPixels(x, y, width, height, format, type, data);
+ 
++    // 添加指纹保护：修改已读取的像素数据
++    const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++    if (command_line->HasSwitch(switches::kFingerprint)) {
++      // 构建 SkImageInfo 来描述像素格式
++      SkColorType color_type;
++      SkAlphaType alpha_type = kUnpremul_SkAlphaType;
++
++      // 根据 WebGL 格式映射到 Skia 格式
++      if (format == GL_RGBA && type == GL_UNSIGNED_BYTE) {
++        color_type = kRGBA_8888_SkColorType;
++      } else if (format == GL_RGB && type == GL_UNSIGNED_BYTE) {
++        color_type = kRGB_888x_SkColorType;
++      } else if (format == GL_ALPHA && type == GL_UNSIGNED_BYTE) {
++        color_type = kAlpha_8_SkColorType;
++      } else {
++        // 对于其他格式，假设为 RGBA
++        color_type = kRGBA_8888_SkColorType;
++      }
++
++      SkImageInfo image_info = SkImageInfo::Make(width, height, color_type, alpha_type);
++
++      // 调用指纹保护函数修改已读取的像素数据
++      StaticBitmapImage::ShuffleSubchannelColorData(data, image_info, 0, 0);
++    }
++
+     if (IdentifiabilityStudySettings::Get()->ShouldSampleType(
+             IdentifiableSurface::Type::kWebFeature)) {
+       const auto& ukm_params = GetUkmParameters();

@@ -1,0 +1,30 @@
+diff --git a/third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc b/third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc
+index a661183470..cb7c87c14e 100644
+--- a/third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc
++++ b/third_party/blink/renderer/modules/canvas/canvas2d/base_rendering_context_2d.cc
+@@ -3783,13 +3783,21 @@ TextMetrics* BaseRenderingContext2D::measureText(const String& text) {
+   // Scale text metrics if enabled
+   const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+   if (command_line->HasSwitch(switches::kFingerprint)) {
++    std::string seed_str = command_line->GetSwitchValueASCII(switches::kFingerprint);
++    std::string combined_rects_x = seed_str + "clientrects_noise_x";
++    uint32_t hash_val_x = std::hash<std::string>{}(combined_rects_x);
++     // 映射到[-0.5, 0.5]范围
++    double norm_x = (hash_val_x & 0xFFFFFFFF) / 4294967295.0 - 0.5;
++    // 使用 0.00001 作为因子 (相当于原来的 1/100000.0)
++    double noise_x = norm_x * 0.00001;
+     if (HostAsOffscreenCanvas()) {
+       if (auto* window = DynamicTo<LocalDOMWindow>(GetTopExecutionContext())) {
+-        if (window->GetFrame() && window->GetFrame()->GetDocument())
+-          text_metrics->Shuffle(window->GetFrame()->GetDocument()->GetNoiseFactorX());
++        if (window->GetFrame() && window->GetFrame()->GetDocument() && text.length() > 0) {
++          text_metrics->Shuffle(noise_x);
++        }
+       }
+-    } else if (canvas) {
+-      text_metrics->Shuffle(canvas->GetDocument().GetNoiseFactorX());
++    } else if (canvas && text.length() > 0) {
++      text_metrics->Shuffle(noise_x);
+     }
+   }
+   return text_metrics;
