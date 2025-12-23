@@ -9,7 +9,8 @@
 
 | **版本**        | **源码**                                                                                   | **Windows**                                                                                   | **Linux**                                                                                   | **MacOS**     |
 |------------------|--------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| **Chrome 139**   | 跟随Chrome 140发布                                                                         | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64_linux.tar.xz) | [139.0.7258.154-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_macos.dmg) |
+| **Chrome 142**   | 跟随Chrome 143发布                                                                         | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium_142.0.7444.175-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium_142.0.7444.175-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium-142.0.7444.175-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium-142.0.7444.175-1-x86_64_linux.tar.xz) | [142.0.7444.175-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium_142.0.7444.175-1.1_macos.dmg) |
+| **Chrome 139**   | [139.0.7258.154](https://github.com/adryfish/fingerprint-chromium/tree/139.0.7258.154)              | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64_linux.tar.xz) | [139.0.7258.154-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_macos.dmg) |
 | **Chrome 138**   | [138.0.7204.183](https://github.com/adryfish/fingerprint-chromium/tree/138.0.7204.183)    | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_windows_x64.zip) | [ 138.0.7204.183-1_linux.tar.xz ](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1_linux.tar.xz) |  |
 | **Chrome 136**   | [136.0.7103.113](https://github.com/adryfish/fingerprint-chromium/tree/136.0.7103.113)              | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_windows_x64.zip) | [ 136.0.7103.113-1_linux.tar.xz ](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1_linux.tar.xz) | [136.0.7103.113-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_macos.dmg) |
 | **Chrome 135**   | [135.0.7049.95](https://github.com/adryfish/fingerprint-chromium/tree/135.0.7049.95)               | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_windows_x64.zip) | [ 135.0.7049.95-1_linux.tar.xz ](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1_linux.tar.xz) | [135.0.7049.95-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_macos.dmg) |
@@ -124,7 +125,7 @@
 | **`--fingerprint`** | 指定指纹种子(seed)，启用后大部分指纹功能生效 | 32位整数 |
 | **`--fingerprint-platform`** | 指定操作系统类型 | `windows`, `linux`, `macos` |
 | **`--fingerprint-platform-version`** | 指定操作系统版本 | 不填时使用默认版本 |
-| **`--fingerprint-brand`** | 指定 `User-Agent` 和 `User-Agent Data` 中的浏览器品牌 | Chrome, Edge, Opera, Vivaldi (默认Chrome) |
+| **`--fingerprint-brand`** | 指定 `User-Agent` 和 `User-Agent Data` 中的浏览器品牌 | Chrome, Edge, Opera, Vivaldi (不指定时默认为Chromium) |
 | **`--fingerprint-brand-version`** | 指定品牌的版本号 | 不填时使用默认版本 |
 | **`--fingerprint-hardware-concurrency`** | 指定 CPU 核心数 | 整数值（不提供时由指纹种子随机生成） |
 | **`--fingerprint-gpu-vendor`** | 可选：自定义WebGL指纹的GPU供应商信息（Chrome 139+） | 供应商字符串（如`Intel Inc.`、`NVIDIA Corporation`）。未指定时使用指纹种子自动生成 |
@@ -134,6 +135,7 @@
 | **`--accept-lang`** | 设置浏览器接受的语言 | 语言代码（如 `zh-CN,en-US`） |
 | **`--timezone`** | 设置时区 | 时区（如`Asia/Shanghai`, `UTC`） |
 | **`--proxy-server`** | 设置代理 | `http`, `socks`代理(不支持密码验证) |
+| **`--disable-gpu-fingerprint`** | 禁用 GPU 指纹功能（Chrome 142+） | 当 GPU 指纹存在问题时使用此参数 |
 
 ### **Chrome 139 新增命令行参数**
 
@@ -158,12 +160,27 @@ Chrome 131 新增了两个用于进阶自定义 `User-Agent` 和 `User-Agent Dat
 - **`--fingerprint-brand`**
   - 指定在 `User-Agent` 和 `User-Agent Data` 中使用的浏览器品牌。
   - 支持的值：`Chrome`，`Edge`，`Opera`，`Vivaldi`，或自定义品牌名称。
+  - 如果不指定，默认品牌为 Chromium。
 
 - **`--fingerprint-brand-version`**
   - 指定指定品牌的版本号。
   - 默认值：`Chrome`，`Edge`，`Opera`，`Vivaldi` 都提供默认版本，也可以传入自定义版本。
 
 这些参数增强了浏览器环境模拟的能力，适合自动化和测试场景。如果没有指定 `--fingerprint-brand`，将使用默认品牌。
+
+### **Chrome 142 新特性**
+
+1. **更新 UserAgent 与 UserAgentData 相关指纹实现**
+   - 改进了 `navigator.userAgent` 和 `navigator.userAgentData` 的指纹实现。
+
+2. **更新音频指纹实现**
+   - 增强了音频指纹修改功能。可以通过 https://pixelscan.net/fingerprint-check 检测验证效果。
+
+3. **更新 Canvas 指纹实现**
+   - 改进了 Canvas 指纹修改，提升反检测能力。
+
+4. **GPU 指纹禁用选项**
+   - GPU 指纹在某些场景下可能存在问题，可使用 `--disable-gpu-fingerprint` 参数禁用 GPU 指纹功能。
 
 ## 使用示例
 
@@ -183,10 +200,11 @@ chrome.exe --fingerprint=2023 --fingerprint-platform=macos --fingerprint-platfor
 
 ### 指纹测试
 
-| 测试平台                                                                                            | 状态                                                      |
+| 测试平台          | 状态                               |
 | -------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
 | [**CreepJS**](https://abrahamjuliot.github.io/creepjs/)                                            | ✔️ 51.5%。                          |
-| [**BrowserScan**](https://browserscan.net/)                                                        | ✔️ 100%。通过所有检测。                 |
+| [**PixelScan**](https://pixelscan.net/fingerprint-check)                                           | ✔️ 通过音频指纹检测。                     |
+| [**BrowserScan**](https://browserscan.net/)                                                        | ✔️ GPU指纹可能存在问题。                 |
 | [**BrowserLeaks**](https://browserleaks.com/)                                                      | ✔️ 支持多项指纹泄漏检测                                      |
 | **Cloudflare**                                                                                     | ✔️                                                        |
 | ‣ [Turnstile](https://nopecha.com/demo/turnstile)                                                  | ✔️                                                        |
@@ -199,6 +217,27 @@ chrome.exe --fingerprint=2023 --fingerprint-platform=macos --fingerprint-platfor
 <img src="qqgroup.png" alt="QQ群二维码" width="300">
 
 如果您需要Chrome定制开发服务或寻找定制开发机会，请加开发定制群 (群号 1055930761)
+
+## 赞助商
+
+### Thordata
+
+可靠且高性价比的代理服务提供商，为企业和开发者提供稳定、高效、合规的全球代理IP服务。
+
+**优惠**：注册即送1GB住宅代理试用和2000次SERP API调用。
+- 邀请码：`HQI30H2P`
+
+🔗 [立即注册](https://dashboard.thordata.com/zh/register?invitation_code=HQI30H2P)
+
+### IPFly
+
+性价比高、IP质量好、7x24客服的IP服务商。
+
+**优惠**：通过专属链接注册可享全场9折。
+- 折扣码：`adryfish`
+- 邀请码：`9A2WLGX9`
+
+🔗 [立即注册](https://ipfly.net/activity/OUEyV0xHWDk6TFZKOVhYQzM5NQ==)
 
 
 ## Credits
