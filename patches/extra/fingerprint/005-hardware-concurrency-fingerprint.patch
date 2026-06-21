@@ -1,0 +1,46 @@
+diff --git a/third_party/blink/renderer/core/frame/navigator_concurrent_hardware.cc b/third_party/blink/renderer/core/frame/navigator_concurrent_hardware.cc
+index f5c0db2d1b..da69d2f24a 100644
+--- a/third_party/blink/renderer/core/frame/navigator_concurrent_hardware.cc
++++ b/third_party/blink/renderer/core/frame/navigator_concurrent_hardware.cc
+@@ -4,11 +4,27 @@
+ 
+ #include "third_party/blink/renderer/core/frame/navigator_concurrent_hardware.h"
+ 
++#include "base/command_line.h"
+ #include "base/system/sys_info.h"
++#include "components/ungoogled/ungoogled_switches.h"
+ 
+ namespace blink {
+ 
+ unsigned NavigatorConcurrentHardware::hardwareConcurrency() const {
++  const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
++
++  if (command_line->HasSwitch(switches::kFingerprintHardwareConcurrency)) {
++    std::string value = command_line->GetSwitchValueASCII(switches::kFingerprintHardwareConcurrency);
++    unsigned long custom_concurrency = std::stoul(value);
++    return static_cast<unsigned>(custom_concurrency);
++  }
++
++  if (command_line->HasSwitch(switches::kFingerprint)) {
++    std::string fingerprint_str = command_line->GetSwitchValueASCII(switches::kFingerprint);
++    uint32_t fingerprint = static_cast<uint32_t>(std::stoull(fingerprint_str));
++    return static_cast<unsigned>(((fingerprint % 13) + 4) * 2);
++  }
++
+   return static_cast<unsigned>(base::SysInfo::NumberOfProcessors());
+ }
+ 
+diff --git a/third_party/blink/renderer/core/frame/navigator_device_memory.cc b/third_party/blink/renderer/core/frame/navigator_device_memory.cc
+index 05fa33e456..792ee43f32 100644
+--- a/third_party/blink/renderer/core/frame/navigator_device_memory.cc
++++ b/third_party/blink/renderer/core/frame/navigator_device_memory.cc
+@@ -12,7 +12,8 @@
+ namespace blink {
+ 
+ float NavigatorDeviceMemory::deviceMemory() const {
+-  return ApproximatedDeviceMemory::GetApproximatedDeviceMemory();
++  return 8;
++  // return ApproximatedDeviceMemory::GetApproximatedDeviceMemory();
+ }
+ 
+ }  // namespace blink

@@ -1,0 +1,91 @@
+diff --git a/components/ungoogled/ungoogled_switches.cc b/components/ungoogled/ungoogled_switches.cc
+index c2f9515e91..49f325e01c 100644
+--- a/components/ungoogled/ungoogled_switches.cc
++++ b/components/ungoogled/ungoogled_switches.cc
+@@ -15,4 +15,40 @@ const char kFingerprintingCanvasMeasureTextNoise[] = "fingerprinting-canvas-meas
+ // Enable fingerprinting deception for Canvas image data
+ const char kFingerprintingCanvasImageDataNoise[] = "fingerprinting-canvas-image-data-noise";
+ 
++// Specify the fingerprint seed
++const char kFingerprint[] = "fingerprint";
++
++// Specify the browser brand
++const char kFingerprintBrand[] = "fingerprint-brand";
++
++// Specify the browser version
++const char kFingerprintBrandVersion[] = "fingerprint-brand-version";
++
++// Disable fingerprint spoofing
++const char kDisableSpoofing[] = "disable-spoofing";
++
++// Specify the screen width
++const char kFingerprintScreenWidth[] = "fingerprint-screen-width";
++
++// Specify the screen height
++const char kFingerprintScreenHeight[] = "fingerprint-screen-height";
++
++// Specify the device scale factor
++const char kFingerprintDeviceScaleFactor[] = "fingerprint-device-scale-factor";
++
++// Specify the number of CPU cores
++const char kFingerprintHardwareConcurrency[] = "fingerprint-hardware-concurrency";
++
++// Specify the operating system type
++const char kFingerprintPlatform[] = "fingerprint-platform";
++
++// Specify the operating system version
++const char kFingerprintPlatformVersion[] = "fingerprint-platform-version";
++
++// Specify the location
++const char kFingerprintLocation[] = "fingerprint-location";
++
++// Specify the timezone
++const char kFingerprintTimezone[] = "timezone";
++
+ }  // namespace switches
+diff --git a/components/ungoogled/ungoogled_switches.h b/components/ungoogled/ungoogled_switches.h
+index 7dace11f70..2ec06c3acd 100644
+--- a/components/ungoogled/ungoogled_switches.h
++++ b/components/ungoogled/ungoogled_switches.h
+@@ -15,6 +15,18 @@ COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintingClientRectsNoise[];
+ COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintingCanvasMeasureTextNoise[];
+ COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintingCanvasImageDataNoise[];
+ 
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprint[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintBrand[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintBrandVersion[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kDisableSpoofing[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintScreenWidth[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintScreenHeight[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintDeviceScaleFactor[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintHardwareConcurrency[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintPlatform[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintPlatformVersion[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintLocation[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintTimezone[];
+ }
+ 
+ #endif  // THIRD_PARTY_UNGOOGLED_FINGERPRINTING_SWITCHES_H_
+diff --git a/content/browser/renderer_host/render_process_host_impl.cc b/content/browser/renderer_host/render_process_host_impl.cc
+index c7d0fc0072..f5d2cc3684 100644
+--- a/content/browser/renderer_host/render_process_host_impl.cc
++++ b/content/browser/renderer_host/render_process_host_impl.cc
+@@ -3724,6 +3724,18 @@ void RenderProcessHostImpl::PropagateBrowserCommandLineToRenderer(
+       switches::kFingerprintingClientRectsNoise,
+       switches::kFingerprintingCanvasMeasureTextNoise,
+       switches::kFingerprintingCanvasImageDataNoise,
++      switches::kFingerprint,
++      switches::kFingerprintBrand,
++      switches::kFingerprintBrandVersion,
++      switches::kDisableSpoofing,
++      switches::kFingerprintScreenWidth,
++      switches::kFingerprintScreenHeight,
++      switches::kFingerprintDeviceScaleFactor,
++      switches::kFingerprintHardwareConcurrency,
++      switches::kFingerprintPlatform,
++      switches::kFingerprintPlatformVersion,
++      switches::kFingerprintLocation,
++      switches::kFingerprintTimezone,
+       switches::kForceDeviceScaleFactor,
+       switches::kForceDisplayColorProfile,
+       switches::kForceHighContrast,
