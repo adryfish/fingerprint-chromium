@@ -1,0 +1,62 @@
+--- a/chrome/browser/ungoogled_flag_entries.h
++++ b/chrome/browser/ungoogled_flag_entries.h
+@@ -120,4 +120,8 @@
+      "Minimal Referrers",
+      "Removes all cross-origin referrers and strips same-origin referrers down to the origin. Has lower precedence than remove-cross-origin-referrers. ungoogled-chromium flag.",
+      kOsAll, FEATURE_VALUE_TYPE(network::features::kMinimalReferrers)},
++    {"reduced-system-info",
++     "Reduced System Info",
++     "Reduces the amount of system information obatainable through headers and javascript, also causes hardwareConcurrency to respond with two cores. ungoogled-chromium flag.",
++     kOsAll, FEATURE_VALUE_TYPE(blink::features::kReducedSystemInfo)},
+ #endif  // CHROME_BROWSER_UNGOOGLED_FLAG_ENTRIES_H_
+--- a/components/embedder_support/user_agent_utils.cc
++++ b/components/embedder_support/user_agent_utils.cc
+@@ -195,6 +195,8 @@ const blink::UserAgentBrandList GetUserA
+ // It helps us avoid introducing individual enterprise policy controls for
+ // sending unified platform for the user agent string.
+ bool ShouldSendUserAgentUnifiedPlatform() {
++  if (base::FeatureList::IsEnabled(blink::features::kReducedSystemInfo))
++    return true;
+   return base::FeatureList::IsEnabled(
+       blink::features::kReduceUserAgentMinorVersion);
+ }
+@@ -636,6 +638,8 @@ std::string GetPlatformForUAMetadata() {
+ }
+ 
+ blink::UserAgentMetadata GetUserAgentMetadata(bool only_low_entropy_ch) {
++  if (base::FeatureList::IsEnabled(blink::features::kReducedSystemInfo))
++    only_low_entropy_ch = true;
+   blink::UserAgentMetadata metadata;
+ 
+   // Low entropy client hints.
+--- a/third_party/blink/common/features.cc
++++ b/third_party/blink/common/features.cc
+@@ -20,6 +20,7 @@
+ namespace blink::features {
+ 
+ BASE_FEATURE(kDisableLinkDrag, "DisableLinkDrag", base::FEATURE_DISABLED_BY_DEFAULT);
++BASE_FEATURE(kReducedSystemInfo, "ReducedSystemInfo", base::FEATURE_DISABLED_BY_DEFAULT);
+ 
+ // -----------------------------------------------------------------------------
+ // Feature definitions and associated constants (feature params, et cetera)
+--- a/third_party/blink/public/common/features.h
++++ b/third_party/blink/public/common/features.h
+@@ -21,6 +21,7 @@ namespace blink {
+ namespace features {
+ 
+ BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kDisableLinkDrag);
++BLINK_COMMON_EXPORT BASE_DECLARE_FEATURE(kReducedSystemInfo);
+ 
+ // -----------------------------------------------------------------------------
+ // Feature declarations and associated constants (feature params, et cetera)
+--- a/third_party/blink/renderer/core/execution_context/navigator_base.cc
++++ b/third_party/blink/renderer/core/execution_context/navigator_base.cc
+@@ -70,6 +70,8 @@ void NavigatorBase::Trace(Visitor* visit
+ }
+ 
+ unsigned int NavigatorBase::hardwareConcurrency() const {
++  if (base::FeatureList::IsEnabled(blink::features::kReducedSystemInfo))
++    return 2;
+   unsigned int hardware_concurrency =
+       NavigatorConcurrentHardware::hardwareConcurrency();
+ 

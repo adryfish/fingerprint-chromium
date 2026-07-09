@@ -1,0 +1,54 @@
+--- a/chrome/browser/ui/views/tabs/tab.cc
++++ b/chrome/browser/ui/views/tabs/tab.cc
+@@ -1133,7 +1133,11 @@ void Tab::UpdateIconVisibility() {
+     // Close button is shown on active tabs regardless of the size.
+     showing_close_button_ = true;
+ #endif  // BUILDFLAG(IS_CHROMEOS)
++    if (base::CommandLine::ForCurrentProcess()->HasSwitch("hide-tab-close-buttons")) {
++      showing_close_button_ = false;
++    } else {
+     available_width -= close_button_width;
++    }
+ 
+     showing_alert_indicator_ =
+         has_alert_icon && alert_icon_width <= available_width;
+@@ -1161,6 +1165,7 @@ void Tab::UpdateIconVisibility() {
+         base::FeatureList::IsEnabled(features::kTabStripDeclutter) &&
+         available_width <= TabStyle::kTabStripDeclutterMaxTabWidthForCloseHide;
+     showing_close_button_ =
++        !base::CommandLine::ForCurrentProcess()->HasSwitch("hide-tab-close-buttons") &&
+ #if BUILDFLAG(IS_CHROMEOS)
+         should_show_close_button &&
+ #endif
+--- a/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.cc
++++ b/chrome/browser/ui/views/tabs/vertical/vertical_tab_view.cc
+@@ -7,6 +7,7 @@
+ #include <optional>
+ #include <string>
+ 
++#include "base/command_line.h"
+ #include "base/functional/callback_helpers.h"
+ #include "base/metrics/histogram_functions.h"
+ #include "base/metrics/user_metrics.h"
+@@ -732,6 +733,10 @@ bool VerticalTabView::IsChildVisible(con
+       return false;
+     }
+ 
++    if (base::CommandLine::ForCurrentProcess()->HasSwitch("hide-tab-close-buttons")) {
++      return false;
++    }
++
+     // When uncollapsing the tabstrip, intentionally start showing the close
+     // button on active non-hovered tabs a little bit sooner than reaching the
+     // uncollapsed min width, because otherwise the close buttons in a grouped
+--- a/chrome/browser/ungoogled_flag_entries.h
++++ b/chrome/browser/ungoogled_flag_entries.h
+@@ -80,4 +80,8 @@
+      "Tab Hover Cards",
+      "Allows removing the tab hover cards or using a tooltip as a replacement. ungoogled-chromium flag.",
+      kOsDesktop, MULTI_VALUE_TYPE(kTabHoverCards)},
++    {"hide-tab-close-buttons",
++     "Hide tab close buttons",
++     "Hides the close buttons on tabs. ungoogled-chromium flag.",
++     kOsDesktop, SINGLE_VALUE_TYPE("hide-tab-close-buttons")},
+ #endif  // CHROME_BROWSER_UNGOOGLED_FLAG_ENTRIES_H_

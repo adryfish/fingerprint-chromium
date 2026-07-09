@@ -1,0 +1,60 @@
+--- a/chrome/browser/chrome_content_browser_client.cc
++++ b/chrome/browser/chrome_content_browser_client.cc
+@@ -339,6 +339,7 @@
+ #include "content/public/browser/internal_webui_config.h"
+ #include "content/public/browser/isolated_web_apps_policy.h"
+ #include "content/public/browser/legacy_tech_cookie_issue_details.h"
++#include "content/public/browser/navigation_entry.h"
+ #include "content/public/browser/navigation_handle.h"
+ #include "content/public/browser/network_service_instance.h"
+ #include "content/public/browser/overlay_window.h"
+--- a/chrome/browser/extensions/BUILD.gn
++++ b/chrome/browser/extensions/BUILD.gn
+@@ -1008,6 +1008,7 @@ source_set("extensions") {
+       "//components/resources",
+       "//components/safe_browsing:buildflags",
+       "//components/safe_browsing/content/browser/web_ui",
++      "//components/safe_browsing/content/common/proto:download_file_types_proto",
+       "//components/safe_browsing/core/common/proto:csd_proto",
+       "//components/search_engines",
+       "//components/services/unzip/public/cpp",
+--- a/chrome/common/BUILD.gn
++++ b/chrome/common/BUILD.gn
+@@ -531,6 +531,7 @@ static_library("url_constants") {
+     "//components/optimization_guide/optimization_guide_internals/webui:url_constants",
+     "//components/password_manager/content/common",
+     "//components/safe_browsing/core/common",
++    "//components/supervised_user/core/common:buildflags",
+     "//device/vr/buildflags",
+   ]
+ 
+--- a/components/component_updater/installer_policies/BUILD.gn
++++ b/components/component_updater/installer_policies/BUILD.gn
+@@ -42,6 +42,7 @@ static_library("installer_policies_no_co
+     "//components/update_client",
+     "//mojo/public/cpp/base:protobuf_support",
+     "//services/network/public/cpp",
++    "//third_party/re2",
+   ]
+ 
+   # Disallow depending on content.
+--- a/components/contextual_tasks/internal/BUILD.gn
++++ b/components/contextual_tasks/internal/BUILD.gn
+@@ -51,6 +51,7 @@ source_set("internal") {
+     "//components/sync/model",
+     "//components/url_formatter",
+     "//net",
++    "//third_party/re2",
+     "//ui/gfx",
+     "//url",
+   ]
+--- a/content/browser/BUILD.gn
++++ b/content/browser/BUILD.gn
+@@ -133,6 +133,7 @@ source_set("browser") {
+     "//components/filename_generation",
+     "//components/history/core/browser:features",
+     "//components/input",
++    "//components/lens:buildflags",
+     "//components/language/core/common",
+     "//components/language_detection/content/common",
+     "//components/link_header_util",

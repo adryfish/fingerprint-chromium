@@ -1,288 +1,186 @@
-# fingerprint-chromium
+# ungoogled-chromium
 
-[中文文档](README-ZH.md)
+*A lightweight approach to removing Google web service dependency*
 
-*A fingerprint browser based on `Ungoogled Chromium`.*
+**Help is welcome!** See the [docs/contributing.md](docs/contributing.md) document for more information.
 
-> ⚠️ **Notice**: This project provides **no technical support**. Please do not contact me for help. Anyone who contacts you asking for payment is a **scammer** — do not be fooled.
+## Objectives
 
-## Installation and Usage
+In descending order of significance (i.e. most important objective first):
 
-### Download
+1. **ungoogled-chromium is Google Chromium, sans dependency on Google web services**.
+2. **ungoogled-chromium retains the default Chromium experience as closely as possible**. Unlike other Chromium forks that have their own visions of a web browser, ungoogled-chromium is essentially a drop-in replacement for Chromium.
+3. **ungoogled-chromium features tweaks to enhance privacy, control, and transparency**. However, almost all of these features must be manually activated or enabled. For more details, see [Feature Overview](#feature-overview).
 
-Please download the version suitable for your system from the links below. Each major version of Chromium is compiled into a corresponding release. Choose the appropriate version for your operating system:
+In scenarios where the objectives conflict, the objective of higher significance should take precedence.
 
-| **Version**      | **Source Code**                                                                                      | **Windows**                                                                                   | **Linux** | **MacOS**                                                                                   |
-|------------------|------------------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|
-| **Chrome 148**   | Released with Chrome 149  | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium-148.0.7778.215-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium-148.0.7778.215-1-x86_64_linux.tar.xz) | [148.0.7778.215-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_macos.dmg) |
-| **Chrome 144**   | [144.0.7559.132](https://github.com/adryfish/fingerprint-chromium/tree/144.0.7559.132)  | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/144.0.7559.132/ungoogled-chromium_144.0.7559.132-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/144.0.7559.132/ungoogled-chromium_144.0.7559.132-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/144.0.7559.132/ungoogled-chromium-144.0.7559.132-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/144.0.7559.132/ungoogled-chromium-144.0.7559.132-1-x86_64_linux.tar.xz) | |
-| **Chrome 142**   | [142.0.7444.175](https://github.com/adryfish/fingerprint-chromium/tree/142.0.7444.175)              | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium_142.0.7444.175-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium_142.0.7444.175-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium-142.0.7444.175-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium-142.0.7444.175-1-x86_64_linux.tar.xz) | [142.0.7444.175-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium_142.0.7444.175-1.1_macos.dmg) |
-| **Chrome 139**   | [139.0.7258.154](https://github.com/adryfish/fingerprint-chromium/tree/139.0.7258.154)              | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64_linux.tar.xz) | [139.0.7258.154-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_macos.dmg) |
-| **Chrome 138**   | [138.0.7204.183](https://github.com/adryfish/fingerprint-chromium/tree/138.0.7204.183)              | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1.1_windows_x64.zip) | [138.0.7204.183-1_linux.tar.xz](https://github.com/adryfish/fingerprint-chromium/releases/download/138.0.7204.183/ungoogled-chromium_138.0.7204.183-1_linux.tar.xz) | |
-| **Chrome 136**   | [136.0.7103.113](https://github.com/adryfish/fingerprint-chromium/tree/136.0.7103.113)        | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_windows_x64.zip) | [136.0.7103.113-1_linux.tar.xz](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1_linux.tar.xz) | [136.0.7103.113-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/136.0.7103.113/ungoogled-chromium_136.0.7103.113-1.1_macos.dmg) |
-| **Chrome 135**   | [135.0.7049.95](https://github.com/adryfish/fingerprint-chromium/tree/135.0.7049.95)        | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_windows_x64.zip) | [135.0.7049.95-1_linux.tar.xz](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1_linux.tar.xz) | [135.0.7049.95-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/135.0.7049.95/ungoogled-chromium_135.0.7049.95-1.1_macos.dmg) |
-| **Chrome 134** | [134.0.6998.165](https://github.com/adryfish/fingerprint-chromium/tree/134.0.6998.165) | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/134.0.6998.165/ungoogled-chromium_134.0.6998.165-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/134.0.6998.165/ungoogled-chromium_134.0.6998.165-1.1_windows_x64.zip) | [134.0.6998.165-1_linux.tar.xz](https://github.com/adryfish/fingerprint-chromium/releases/download/134.0.6998.165/ungoogled-chromium_134.0.6998.165-1_linux.tar.xz) | |
-| **Chrome 133** | [133.0.6943.126](https://github.com/adryfish/fingerprint-chromium/tree/133.0.6943.126) | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/133.0.6943.126/ungoogled-chromium_133.0.6943.126-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/133.0.6943.126/ungoogled-chromium_133.0.6943.126-1.1_windows_x64.zip) | [133.0.6943.126-1_linux.tar.xz](https://github.com/adryfish/fingerprint-chromium/releases/download/133.0.6943.126/ungoogled-chromium_133.0.6943.126-1_linux.tar.xz) |  |
-| **Chrome 132**   | [132.0.6834.159](https://github.com/adryfish/fingerprint-chromium/tree/132.0.6834.159)               | [Installer](https://github.com/adryfish/fingerprint-chromium/releases/download/132.0.6834.159/ungoogled-chromium_132.0.6834.159-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/132.0.6834.159/ungoogled-chromium_132.0.6834.159-1.1_windows_x64.zip) | [ 132.0.6834.159-1_linux.tar.xz ](https://github.com/adryfish/fingerprint-chromium/releases/download/132.0.6834.159/ungoogled-chromium_132.0.6834.159-1_linux.tar.xz) | [132.0.6834.110-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/132.0.6834.159/ungoogled-chromium_132.0.6834.110-1.1_macos.dmg) |
+## Content Overview
 
-For chinese users, you can download via cloud storage
+* [Objectives](#objectives)
+* [Motivation and Philosophy](#motivation-and-philosophy)
+* [Feature Overview](#feature-overview)
+* [**Downloads**](#downloads)
+* [Source Code](#source-code)
+* [**FAQ**](#faq)
+* [Building Instructions](#building-instructions)
+* [Design Documentation](#design-documentation)
+* [**Contributing, Reporting, Contacting**](#contributing-reporting-contacting)
+* [Credits](#credits)
+* [Related Projects](#related-projects)
+* [License](#license)
 
-Quark: https://pan.quark.cn/s/9bb65af874fb
+## Motivation and Philosophy
 
----
+Without signing in to a Google Account, Chromium does pretty well in terms of security and privacy. However, Chromium still has some dependency on Google web services and binaries. In addition, Google designed Chromium to be easy and intuitive for users, which means they compromise on transparency and control of internal operations.
 
-You can find the compiled versions for each major Chromium release on the GitHub Release page. Download the appropriate file for your platform.
+ungoogled-chromium addresses these issues in the following ways:
 
-### Build from Source
+1. Remove all remaining background requests to any web services while building and running the browser
+2. Remove all code specific to Google web services
+3. Remove all uses of pre-made binaries from the source code, and replace them with user-provided alternatives when possible.
+4. Disable features that inhibit control and transparency, and add or modify features that promote them (these changes will almost always require manual activation or enabling).
 
-**SOURCE CODE IS AVAILABLE IN THE GITHUB REPOSITORY TAGS, NOT IN THE MAIN BRANCH!**
+These features are implemented as configuration flags, patches, and custom scripts. For more details, consult the [Design Documentation](docs/design.md).
 
-To maintain the integrity of this free and open source project, we've adopted a delayed source code release policy:
+## Feature Overview
 
-- **Current Version**: Compiled binaries are immediately available for all users
-- **Source Code**: patch files will be released when the next version is published (typically one month later)
+*This section overviews the features of ungoogled-chromium. For more detailed information, it is best to consult the source code.*
 
-This approach helps prevent unauthorized repackaging and profiteering from our work while maintaining our open source commitment.
+Contents of this section:
 
-Once the source code is released, you can build by referring to the [`ungoogled-chromium`](https://github.com/ungoogled-software/ungoogled-chromium/blob/master/docs/building.md) documentation. Simply replace the `ungoogled-chromium` submodule URL with the `fingerprint-browser` repository URL.
+* [Key Features](#key-features)
+* [Enhancing Features](#enhancing-features)
+* [Borrowed Features](#borrowed-features)
+* [Supported Platforms and Distributions](#supported-platforms-and-distributions)
 
-## 📢 Author's Other Projects
+### Key Features
 
-<div style="border: 2px solid #f39c12; padding: 15px; background-color: #fffbe6; border-radius: 10px;">
+*These are the core features introduced by ungoogled-chromium.*
 
-<details open>
-<summary><b>🌟 EasyChat - Claude Official Site Mirror</b></summary>
+* Disable functionality specific to Google domains (e.g. Google Host Detector, Google URL Tracker, Google Cloud Messaging, Google Hotwording, etc.)
+    * This includes disabling [Safe Browsing](https://en.wikipedia.org/wiki/Google_Safe_Browsing). Consult [the FAQ for the rationale](https://ungoogled-software.github.io/ungoogled-chromium-wiki/faq#why-is-safe-browsing-disabled).
+* Block internal requests to Google at runtime. This feature is a fail-safe measure for the above, in case Google changes or introduces new components that our patches do not disable. This feature is implemented by replacing many Google web domains in the source code with non-existent alternatives ending in `qjz9zk` (known as domain substitution; [see docs/design.md](docs/design.md#source-file-processors) for details), then [modifying Chromium to block its own requests with such domains](patches/core/ungoogled-chromium/block-trk-and-subdomains.patch). In other words, no connections are attempted to the `qjz9zk` domain.
+* Strip binaries from the source code (known as binary pruning; [see docs/design.md](docs/design.md#source-file-processors) for details)
 
-🔥 **EasyChat** is a Claude official site mirror providing China direct access experience with 1:1 restoration of official features for efficient AI assistant services!
+### Enhancing Features
 
-- 🌐 **China Access**: Direct connection to Claude official services without VPN.
-- 🤝 **Shared Membership**: Cost-effective way to enjoy Claude member features with no account ban risks.
-- 👤 **Dedicated Membership**: Exclusive account for your personal use with Claude Code support, full member privileges with stable and uninterrupted service.
-- 🔑 **Account Hosting**: Securely host your own account with Claude Code support for seamless China direct access.
+*These are the non-essential features introduced by ungoogled-chromium.*
 
-🔗 **Visit**: [https://easychat.top](https://easychat.top)
+* Add many new command-line switches and `chrome://flags` entries to configure new features (which are disabled by default). See [docs/flags.md](docs/flags.md) for the exhaustive list.
+* Add *Suggestions URL* text field in the search engine editor (`chrome://settings/searchEngines`) for customizing search engine suggestions.
+* Add more URL schemes allowed to save page schemes.
+* Add Omnibox search provider "No Search" to allow disabling of searching
+* Add a custom cross-platform build configuration and packaging wrapper for Chromium. It currently supports many Linux distributions, macOS, and Windows. (See [docs/design.md](docs/design.md) for details on the system.)
+* Force all pop-ups into tabs
+* Disable automatic formatting of URLs in Omnibox (e.g. stripping `http://`, hiding certain parameters)
+* Disable intranet redirect detector (extraneous DNS requests)
+    * This breaks captive portal detection, but captive portals still work.
+* (Iridium Browser feature change) Prevent URLs with the `trk:` scheme from connecting to the Internet
+    * Also prevents any URLs with the top-level domain `qjz9zk` (as used in domain substitution) from attempting a connection.
+* (Windows-specific) Do not set the Zone Identifier on downloaded files
 
-</details>
+### Borrowed Features
 
-</div>
+In addition to the features introduced by ungoogled-chromium, ungoogled-chromium selectively borrows many features from the following projects (in approximate order of significance):
 
-<div style="border: 2px solid #3498db; padding: 15px; background-color: #e6f3ff; border-radius: 10px; margin-top: 15px;">
+* [Inox patchset](https://github.com/gcarq/inox-patchset)
+* [Bromite](https://github.com/bromite/bromite)
+* [Debian](https://tracker.debian.org/pkg/chromium)
+* [Iridium Browser](https://iridiumbrowser.de/)
 
-<details open>
-<summary><b>🛠️ Flapcode</b></summary>
+### Supported Platforms and Distributions
 
-A one-stop solution designed for users who need Claude Code / Codex but prefer not to self-host.
+[See docs/platforms.md for a list of supported platforms](docs/platforms.md).
 
-**Core Advantages:**
-- 🌐 **Direct China Access**: Access full Claude Code / Codex functionality at high speed without VPN
-- 👤 **Dedicated Accounts**: Individual account per user, no shared account pools, lower cost, stable and reliable
-- 💾 **Full Cache Support**: 100% cache availability for improved efficiency and cost savings
-- 🌍 **Web Supported**: Claude account also work on the Claude mirror
+Other platforms are discussed and tracked in this repository's Issue Tracker. Learn more about using the Issue Tracker under the section [Contributing, Reporting, Contacting](#contributing-reporting-contacting).
 
-🔗 **Visit**: [https://flapcode.com](https://flapcode.com)
+## Downloads
 
-</details>
+### Automated or maintained builds
 
-</div>
+ungoogled-chromium is available in the following **software repositories**:
 
-## Features
+* Arch: Available in the AUR, [see instructions in ungoogled-chromium-archlinux](https://github.com/ungoogled-software/ungoogled-chromium-archlinux)
+* Debian: Available in OBS, find your [distribution specific instructions](https://github.com/ungoogled-software/ungoogled-chromium-debian) in the Installing section
+* Ubuntu: Available in the [XtraDeb PPA](https://xtradeb.net/) as [ungoogled-chromium](https://xtradeb.net/apps/ungoogled-chromium/).
+* Fedora: Available in [COPR](https://copr.fedorainfracloud.org/coprs/) as [`wojnilowicz/ungoogled-chromium`](https://copr.fedorainfracloud.org/coprs/wojnilowicz/ungoogled-chromium/). Also available in [RPM Fusion](https://rpmfusion.org/Configuration) as `chromium-browser-privacy` (outdated).
+* Gentoo: Available in [`::pf4public`](https://github.com/PF4Public/gentoo-overlay) overlay as [`ungoogled-chromium`](https://github.com/PF4Public/gentoo-overlay/tree/master/www-client/ungoogled-chromium) and [`ungoogled-chromium-bin`](https://github.com/PF4Public/gentoo-overlay/tree/master/www-client/ungoogled-chromium-bin) ebuilds
+* [OpenMandriva](https://openmandriva.org/) includes ungoogled-chromium as its main browser. The `chromium` package includes all ungoogling patches.
+* macOS: Available in [Homebrew](https://brew.sh/) as [`ungoogled-chromium`](https://formulae.brew.sh/cask/ungoogled-chromium). Just run `brew install --cask ungoogled-chromium`. Chromium will appear in your `/Applications` directory.
+* FreeBSD: Available in pkg as [`www/ungoogled-chromium`](https://www.freshports.org/www/ungoogled-chromium/).
+* OpenBSD: Available in ports as [`www/ungoogled-chromium`](https://github.com/openbsd/ports/tree/master/www/ungoogled-chromium).
+* [openSUSE](https://www.opensuse.org/): Available as [`ungoogled-chromium`](https://software.opensuse.org//download.html?project=network%3Achromium&package=ungoogled-chromium). 
 
-### Fingerprint Support
+If your GNU/Linux distribution is not listed, there are distro-independent builds available via the following **package managers**:
 
-You can use creepjs and browserleaks to test fingerprint modification effects.
+* Flatpak: Available [in the Flathub repo](https://flathub.org/apps/details/io.github.ungoogled_software.ungoogled_chromium) as `io.github.ungoogled_software.ungoogled_chromium`
+* GNU Guix: Available as `ungoogled-chromium`
+* NixOS/nixpkgs: Available as `ungoogled-chromium`
 
-* **User-Agent**: Modify the browser's `navigator.userAgent`, `navigator.platform`, `navigator.userAgentData` and `Client Hints` information.
-* **Operating System**
-* **Audio**
-* **Plugins**: After removal in version 133+, the browser returns a fixed plugin list.
-* **CPU Cores**
-* **Memory**
-* **WebGL Image**
-* **WebGL Metadata**: Modify GPU vendor and graphics card model (currently only supports Linux).
-* **Fonts**
-* **Canvas Image**
-* **Canvas Text**
-* **ClientRects**
-* **WebRTC**
-* **Language Support**
-* **Timezone Support**
+### Third-party binaries
 
-### Automation Support
-**Optimized for automation scenarios, offering the following features:**
+If your operating system is not listed above, you can also try to [**Download binaries from here**](https://ungoogled-software.github.io/ungoogled-chromium-binaries/)
 
-1. **Fake Shadow DOM Support**  
-   Adds the `fakeShadowRoot` property, equivalent to the `shadowRoot` property, enabling access to Closed Shadow Root for easier automation handling.
+*NOTE: These binaries are provided by anyone who are willing to build and submit them. Because these binaries are not necessarily [reproducible](https://reproducible-builds.org/), authenticity cannot be guaranteed; In other words, there is always a non-zero probability that these binaries may have been tampered with. In the unlikely event that this has happened to you, please [report it in a new issue](#contributing-reporting-contacting).*
 
-2. **Avoid CDP Detection**  
-   Prevents Chrome DevTools Protocol (CDP) detection when invoking `Runtime.enable`, enhancing stealthiness for automation tools.
+These binaries are known as **contributor binaries**.
 
-3. **Webdriver**  
-   Sets `navigator.webdriver` to false to avoid detection of automation tools.
+## Source Code
 
-4. **Headless**  
-   Only changes `User-Agent` from `HeadlessChrome` to `Chrome`. Other headless characteristics remain unchanged, use with caution.
+This repository only contains the common code for all platforms; it does not contain all the configuration and scripts necessary to build ungoogled-chromium. Most users will want to use platform-specific repos, where all the remaining configuration and scripts are provided for specific platforms:
 
-### Enabling Fingerprint Features with Command Line Arguments
+[**Find the repo for a specific platform here**](docs/platforms.md).
 
-You can enable or customize fingerprinting and privacy protection features by passing command line arguments when launching the browser:
+If you wish to include ungoogled-chromium code in your own build process, consider using [the tags in this repo](https://github.com/ungoogled-software/ungoogled-chromium/tags). These tags follow the format `{chromium_version}-{revision}` where
 
-| **Command Line Argument** | **Description** | **Examples** |
-|---------------------------|-----------------|------------------------------|
-| **`--fingerprint`** | Specifies the fingerprint seed. When enabled, most fingerprinting features take effect | 32-bit integer |
-| **`--fingerprint-platform`** | Specifies the operating system type | `windows`, `linux`, `macos` |
-| **`--fingerprint-platform-version`** | Specifies the operating system version | Uses default version if not specified |
-| **`--fingerprint-brand`** | Specifies the browser brand in `User-Agent` and `User-Agent Data` | Chrome, Edge, Opera, Vivaldi (default is Chromium if not specified) |
-| **`--fingerprint-brand-version`** | Specifies the version number for the browser brand | Uses default version if not specified |
-| **`--fingerprint-hardware-concurrency`** | Specifies the number of CPU cores | Integer value (randomly generated from fingerprint seed if not provided) |
-| **`--disable-non-proxied-udp`** | Specifies WebRTC policy, by default non-proxied UDP connections are disabled | Recommended to keep default setting |
-| **`--lang`** | Sets the browser language | Language code (e.g., `en-US`) |
-| **`--accept-lang`** | Sets the languages accepted by the browser | Language codes (e.g., `en-US,en`) |
-| **`--timezone`** | timezone | Timezone (e.g., `Asia/Shanghai`, `UTC`) |
-| **`--proxy-server`** | proxy server| `http`, `socks` proxy (password authentication not supported) |
-| **`--disable-spoofing`** | Disable specific fingerprint spoofing (Chrome 144+) | Comma-separated values: `font`, `audio`, `canvas`, `clientrects`, `gpu` |
-| **`--fingerprint-gpu-vendor`** | ~~Customize GPU vendor for WebGL fingerprinting (Removed in Chrome 144)~~ | ~~Vendor string. Removed in Chrome 144~~ |
-| **`--fingerprint-gpu-renderer`** | ~~Customize GPU renderer/model for WebGL fingerprinting (Removed in Chrome 144)~~ | ~~Renderer string. Removed in Chrome 144~~ |
-| **`--disable-gpu-fingerprint`** | ~~Disable GPU fingerprint (Removed in Chrome 144, use `--disable-spoofing=gpu` instead)~~ | ~~Removed in Chrome 144~~ |
+* `chromium_version` is the version of Chromium used in `x.x.x.x` format, and
+* `revision` is a number indicating the version of ungoogled-chromium for the corresponding Chromium version.
 
-### **New Command Line Arguments in Chrome 139**
+Additionally, most platform-specific repos extend their tag scheme upon this one.
 
-**GPU Fingerprinting Parameters**
+**Building the source code**: [See docs/building.md](docs/building.md)
 
-> **Note**: `--fingerprint-gpu-vendor` and `--fingerprint-gpu-renderer` have been removed in Chrome 144. Use `--disable-spoofing=gpu` to disable GPU fingerprint spoofing instead.
+### Mirrors
 
-Starting from Chrome 139, GPU fingerprinting is automatically enabled when using the `--fingerprint` parameter. The following optional parameters allow for custom GPU configuration:
+List of mirrors:
 
-- **`--fingerprint-gpu-vendor`** (Optional)
-  - Customize the GPU vendor string for WebGL fingerprinting.
-  - Examples: `Intel Inc.`, `NVIDIA Corporation`, `AMD`, `Apple`
-  - If not specified, GPU vendor will be automatically generated based on the fingerprint seed.
+* [Codeberg](https://codeberg.org): [main repo](https://codeberg.org/ungoogled-software/ungoogled-chromium) and [ungoogled-software](https://codeberg.org/ungoogled-software)
 
-- **`--fingerprint-gpu-renderer`** (Optional)
-  - Customize the GPU renderer/model string for WebGL fingerprinting.
-  - Examples: `Intel Iris OpenGL Engine`, `NVIDIA GeForce GTX 1060`, `AMD Radeon RX 580`
-  - If not specified, GPU renderer will be automatically generated based on the fingerprint seed.
+## FAQ
 
-### **User-Agent Customization Command Line Arguments (Chrome 131)**
+[See the frequently-asked questions (FAQ) on the Wiki](https://ungoogled-software.github.io/ungoogled-chromium-wiki/faq)
 
-Chrome 131 introduced two command line arguments for advanced customization of `User-Agent` and `User-Agent Data`:
+## Building Instructions
 
-- **`--fingerprint-brand`**
-  - Specifies the browser brand used in `User-Agent` and `User-Agent Data`.
-  - Supported values: `Chrome`, `Edge`, `Opera`, `Vivaldi`, or custom brand names.
-  - If not specified, the default brand is Chromium.
+[See docs/building.md](docs/building.md)
 
-- **`--fingerprint-brand-version`**
-  - Specifies the version number for the specified brand.
-  - Default values: `Chrome`, `Edge`, `Opera`, `Vivaldi` all provide default versions, custom versions can also be passed.
+## Design Documentation
 
-These arguments enhance browser environment simulation capabilities, suitable for automation and testing scenarios. If `--fingerprint-brand` is not specified, the default brand will be used.
+[See docs/design.md](docs/design.md)
 
-### **New Features in Chrome 142**
+## Contributing, Reporting, Contacting
 
-1. **Updated UserAgent and UserAgentData Fingerprint Implementation**
-   - Improved fingerprint implementation for `navigator.userAgent` and `navigator.userAgentData`.
-
-2. **Updated Audio Fingerprint Implementation**
-   - Enhanced audio fingerprint modification. You can verify the effect at https://pixelscan.net/fingerprint-check
-
-3. **Updated Canvas Fingerprint Implementation**
-   - Improved Canvas fingerprint modification for better anti-detection.
-
-4. **GPU Fingerprint Disable Option**
-   - GPU fingerprint may have issues in some scenarios. Use `--disable-gpu-fingerprint` parameter to disable GPU fingerprint if needed.
-   - ~~Removed in Chrome 144. Use `--disable-spoofing=gpu` instead.~~
-
-### **New Features in Chrome 144**
-
-1. **Removed GPU Fingerprint Parameters**
-   - Removed `--fingerprint-gpu-vendor`, `--fingerprint-gpu-renderer`, and `--disable-gpu-fingerprint` parameters.
-
-2. **New `--disable-spoofing` Parameter**
-   - A comma-separated parameter to selectively disable specific fingerprint spoofing.
-   - Available values: `font`, `audio`, `canvas`, `clientrects`, `gpu`
-   - Example: `--disable-spoofing=font,gpu` disables font and GPU fingerprint spoofing.
-
-## Usage Examples
-
-Here are command line examples for several common use cases:
-
-### Basic Usage
-
-```bash
-./chrome --fingerprint=1000 --user-data-dir=/tmp/chromium/1000 --timezone="America/Los_Angeles" --proxy-server="your_proxy_server_address"
-```
-
-### Customizing User-Agent
-
-```bash
-chrome.exe --fingerprint=2023 --fingerprint-platform=macos --fingerprint-platform-version="15.2.0" --fingerprint-brand="Edge"  --user-data-dir=%TEMP%\chromium
-```
-
-### Fingerprint Testing
-
-| Testing Platform                                                                                            | Status                                                      |
-| -------------------------------------------------------------------------------------------------- | --------------------------------------------------------- |
-| [**CreepJS**](https://abrahamjuliot.github.io/creepjs/)                                            | ✔️ 51.5%.                         |
-| [**PixelScan**](https://pixelscan.net/fingerprint-check)                                           | ✔️ Pass audio fingerprint detection.                     |
-| [**BrowserScan**](https://browserscan.net/)                                                        | ✔️ GPU fingerprint may have issues.                     |
-| [**BrowserLeaks**](https://browserleaks.com/)                                                      | ✔️ Supports multiple fingerprint leak detection                                      |
-| **Cloudflare**                                                                                     | ✔️                                                        |
-| ‣ [Turnstile](https://nopecha.com/demo/turnstile)                                                  | ✔️                                                        |
-
-## User Communication
-
-Scan the QR code to join QQ groups to communicate with other users
-
-<img src="qqgroup.png" alt="QQ Group QR code" width="300">
-
-If you need Chrome customization development services or are looking for custom development opportunities, please join the development customization group (QQ group 1055930761)
-
-## Sponsors
-
-### IPdodo
-
-A trusted proxy IP provider that delivers all-in-one solutions of high-anonymity, high-speed, and secure proxy IPs combined with S5 forwarding services, tailored for cross-border e-commerce, social media operations, web scraping, data collection, and global business growth.
-
-**Offer**: Register today to get 1GB of free residential proxy traffic.
-- Invitation Code: `ATUQ3Q0O`
-
-🔗 [Register Now](https://www.ipdodo.com/account/register?invite_code=ATUQ3Q0O)
-
-### IPFly
-
-A cost-effective IP service provider with high-quality IPs and 7x24 customer support.
-
-**Offer**: Register via exclusive link to enjoy 10% off sitewide.
-- Discount Code: `adryfish`
-- Invitation Code: `9A2WLGX9`
-
-🔗 [Register Now](https://ipfly.net/activity/OUEyV0xHWDk6TFZKOVhYQzM5NQ==)
-
-### RapidProxy
-
-A high-performance proxy provider offering clean residential and native static ISP IPs with high anonymity, fast speeds, and low block rates. Designed for web scraping, social media automation, e-commerce, and global business operations.
-
-**Offer**: Free trial available with non-expiring residential proxy traffic.
-**Highlight**: Native static IPs with low detection and stable performance.
-- Discount Code: `adryfish` (10% OFF)
-
-🔗 [Register Now](https://www.rapidproxy.io/?code=AZT7HA4NS)
-
-### OKKproxy
-
-🔥 OKKproxy offers 80 million global residential IPs as a first-hand provider, with TB-level bulk purchasing as low as $0.4/GB.
-
-- 🌐 **Coverage**: Rotating residential proxy IPs / overseas mobile IPs / static residential IPs.
-- 🎀 **Proxy Types**: Supports HTTP(S) and SOCKS5 proxies.
-- 🎉 **Use Cases**: Suitable for e-commerce, social media, multi-accounting, and SEO.
-- 🤝 **Established**: 3 years.
-
-🔗 [Register Now](https://okkproxy.com/?utm_source=fingerprint&utm_medium=fingerprint&ref=fingerprint&sharecode=43783634)
+* For reporting and contacting, see [SUPPORT.md](SUPPORT.md)
+* If you're willing to help, check out the [Issue Tracker](https://github.com/ungoogled-software/ungoogled-chromium/issues) and especially issues, which [need help](https://github.com/ungoogled-software/ungoogled-chromium/issues?q=is%3Aopen+is%3Aissue+label%3A%22help+wanted%22)
+* For contributing (e.g. how to help, submitting changes, criteria for new features), see [docs/contributing.md](docs/contributing.md)
+* If you have some small contributions that don't fit our criteria, consider adding them to [ungoogled-software/contrib](https://github.com/ungoogled-software/contrib) or [our Wiki](https://github.com/ungoogled-software/ungoogled-chromium-wiki) instead.
 
 ## Credits
 
- * [Ungoogled Chromium](https://github.com/ungoogled-software/ungoogled-chromium)
+* [The Chromium Project](https://www.chromium.org/)
+* [Inox patchset](https://github.com/gcarq/inox-patchset)
+* [Debian](https://tracker.debian.org/pkg/chromium-browser)
+* [Bromite](https://github.com/bromite/bromite)
+* [Iridium Browser](https://iridiumbrowser.de/)
+* The users for testing and debugging, [contributing code](https://github.com/ungoogled-software/ungoogled-chromium/graphs/contributors), providing feedback, or simply using ungoogled-chromium in some capacity.
 
- ## License
+## Related Projects
+
+List of known projects that fork or use changes from ungoogled-chromium:
+
+* [Bromite](https://github.com/bromite/bromite) (Borrows some patches. Features builds for Android)
+* [ppc64le fork](https://github.com/leo-lb/ungoogled-chromium) (Fork with changes to build for ppc64le CPUs)
+
+## License
 
 BSD-3-clause. See [LICENSE](LICENSE)

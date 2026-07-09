@@ -1,0 +1,35 @@
+# Disables use of a binary for preloading the Media Engagement index
+# Said binary is: chrome/browser/resources/media/mei_preload/preloaded_data.pb
+# According to media/base/media_switches (for PreloadMediaEngagementData), it
+# "enables a list of origins to be considered as having a high MEI until there
+# is enough local data to determine the user's preferred behavior." This feature
+# does not seem to outweigh the benefit of removing the binary, thus this patch.
+
+--- a/chrome/BUILD.gn
++++ b/chrome/BUILD.gn
+@@ -376,7 +376,6 @@ if (!is_android && !is_mac) {
+     }
+ 
+     data_deps += [
+-      "//chrome/browser/resources/media/mei_preload:component",
+       "//chrome/browser/web_applications/isolated_web_apps/key_distribution/preload:component",
+       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
+       "//third_party/widevine/cdm",
+@@ -1187,7 +1186,6 @@ if (is_win) {
+       ":optimization_guide_library",
+       ":swiftshader_binaries",
+       ":widevine_cdm_library",
+-      "//chrome/browser/resources/media/mei_preload:component_bundle",
+       "//chrome/browser/web_applications/isolated_web_apps/key_distribution/preload:component_bundle",
+       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component_bundle",
+     ]
+--- a/chrome/browser/resources/BUILD.gn
++++ b/chrome/browser/resources/BUILD.gn
+@@ -115,7 +115,6 @@ group("resources") {
+   if (is_mac) {
+     public_deps += [
+       "unexportable_keys_internals:resources",
+-      "//chrome/browser/resources/media/mei_preload:component",
+       "//components/privacy_sandbox/privacy_sandbox_attestations/preload:component",
+     ]
+   }

@@ -1,0 +1,13 @@
+# Add ability to always open dev context menu on reload button.
+
+--- a/chrome/browser/ui/views/toolbar/reload_button.cc
++++ b/chrome/browser/ui/views/toolbar/reload_button.cc
+@@ -142,7 +142,7 @@ bool ReloadButton::GetDevToolsStatusForT
+ }
+ 
+ void ReloadButton::SetDevToolsStatus(bool is_dev_tools_connected) {
+-  is_dev_tools_connected_ = is_dev_tools_connected;
++  is_dev_tools_connected_ = true;
+   UpdateAccessibleHasPopup();
+   UpdateCachedTooltipText();
+ }

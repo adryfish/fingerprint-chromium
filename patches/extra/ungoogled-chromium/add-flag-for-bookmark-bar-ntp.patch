@@ -1,0 +1,45 @@
+--- a/chrome/browser/ui/bookmarks/bookmark_bar_controller.cc
++++ b/chrome/browser/ui/bookmarks/bookmark_bar_controller.cc
+@@ -4,6 +4,7 @@
+ 
+ #include "chrome/browser/ui/bookmarks/bookmark_bar_controller.h"
+ 
++#include "base/command_line.h"
+ #include "chrome/browser/bookmarks/bookmark_model_factory.h"
+ #include "chrome/browser/defaults.h"
+ #include "chrome/browser/profiles/profile.h"
+@@ -138,6 +139,10 @@ void BookmarkBarController::OnSplitTabCh
+ }
+ 
+ bool BookmarkBarController::ShouldShowBookmarkBar() const {
++  if (base::CommandLine::ForCurrentProcess()->GetSwitchValueASCII("bookmark-bar-ntp") == "never") {
++    return false;
++  }
++
+   Profile* profile = browser_->GetProfile();
+   if (profile->IsGuestSession()) {
+     return false;
+--- a/chrome/browser/ungoogled_flag_choices.h
++++ b/chrome/browser/ungoogled_flag_choices.h
+@@ -34,4 +34,10 @@ const FeatureEntry::Choice kScrollEventC
+      "scroll-tabs",
+      "never"}
+ };
++const FeatureEntry::Choice kBookmarkBarNewTab[] = {
++    {flags_ui::kGenericExperimentChoiceDefault, "", ""},
++    {"Never",
++     "bookmark-bar-ntp",
++     "never"},
++};
+ #endif  // CHROME_BROWSER_UNGOOGLED_FLAG_CHOICES_H_
+--- a/chrome/browser/ungoogled_flag_entries.h
++++ b/chrome/browser/ungoogled_flag_entries.h
+@@ -36,4 +36,8 @@
+      "Scroll switches tab",
+      "Switch to the left/right tab if the wheel-scroll happens over the tabstrip, or the empty space beside the tabstrip. ungoogled-chromium flag.",
+      kOsDesktop, MULTI_VALUE_TYPE(kScrollEventChangesTab)},
++    {"bookmark-bar-ntp",
++     "Bookmark Bar on New-Tab-Page",
++     "Disable the Bookmark Bar on the New-Tab-Page. ungoogled-chromium flag.",
++     kOsDesktop, MULTI_VALUE_TYPE(kBookmarkBarNewTab)},
+ #endif  // CHROME_BROWSER_UNGOOGLED_FLAG_ENTRIES_H_

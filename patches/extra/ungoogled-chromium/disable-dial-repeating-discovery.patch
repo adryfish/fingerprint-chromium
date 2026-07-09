@@ -1,0 +1,25 @@
+# Disables the dial registry's repeating discovery timer
+# This caused unnecessary SSDP network spam
+
+--- a/chrome/browser/media/router/discovery/dial/dial_registry.cc
++++ b/chrome/browser/media/router/discovery/dial/dial_registry.cc
+@@ -160,10 +160,6 @@ void DialRegistry::StartPeriodicDiscover
+   }
+ 
+   dial_ = CreateDialService();
+-  DoDiscovery();
+-  repeating_timer_ = std::make_unique<base::RepeatingTimer>();
+-  repeating_timer_->Start(FROM_HERE, refresh_interval_delta_, this,
+-                          &DialRegistry::DoDiscovery);
+   // Always send the current device list with the next discovery request.  This
+   // may not be necessary, but is done to match previous behavior.
+   ++registry_generation_;
+@@ -181,8 +177,6 @@ void DialRegistry::StopPeriodicDiscovery
+     return;
+   }
+ 
+-  repeating_timer_->Stop();
+-  repeating_timer_.reset();
+   ClearDialService();
+ }
+ 

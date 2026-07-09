@@ -1,0 +1,63 @@
+# Add ungoogled-chromium-specific code to components/ungoogled/
+
+--- /dev/null
++++ b/components/ungoogled/BUILD.gn
+@@ -0,0 +1,14 @@
++# Copyright (c) 2020 The ungoogled-chromium Authors. All rights reserved.
++# Use of this source code is governed by a BSD-style license that can be
++# found in the LICENSE file.
++
++component("ungoogled_switches") {
++  sources = [
++    "ungoogled_switches.h",
++    "ungoogled_switches.cc",
++  ]
++
++  defines = [ "IS_UNGOOGLED_IMPL" ]
++
++  deps = [ "//base" ]
++}
+--- /dev/null
++++ b/components/ungoogled/ungoogled_switches.cc
+@@ -0,0 +1,18 @@
++// Copyright (c) 2020 The ungoogled-chromium Authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++#include "components/ungoogled/ungoogled_switches.h"
++
++namespace switches {
++
++// Enable fingerprinting deception for getClientRects and getBoundingClientRect
++const char kFingerprintingClientRectsNoise[] = "fingerprinting-client-rects-noise";
++
++// Enable fingerprinting deception for measureText
++const char kFingerprintingCanvasMeasureTextNoise[] = "fingerprinting-canvas-measuretext-noise";
++
++// Enable fingerprinting deception for Canvas image data
++const char kFingerprintingCanvasImageDataNoise[] = "fingerprinting-canvas-image-data-noise";
++
++}  // namespace switches
+--- /dev/null
++++ b/components/ungoogled/ungoogled_switches.h
+@@ -0,0 +1,20 @@
++// Copyright (c) 2020 The ungoogled-chromium Authors. All rights reserved.
++// Use of this source code is governed by a BSD-style license that can be
++// found in the LICENSE file.
++
++// Defines all the fingerprinting command-line switches.
++
++#ifndef THIRD_PARTY_UNGOOGLED_FINGERPRINTING_SWITCHES_H_
++#define THIRD_PARTY_UNGOOGLED_FINGERPRINTING_SWITCHES_H_
++
++#include "base/component_export.h"
++
++namespace switches {
++
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintingClientRectsNoise[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintingCanvasMeasureTextNoise[];
++COMPONENT_EXPORT(UNGOOGLED) extern const char kFingerprintingCanvasImageDataNoise[];
++
++}
++
++#endif  // THIRD_PARTY_UNGOOGLED_FINGERPRINTING_SWITCHES_H_

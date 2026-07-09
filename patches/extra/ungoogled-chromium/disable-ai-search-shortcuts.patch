@@ -1,0 +1,56 @@
+--- a/components/omnibox/browser/featured_search_provider.cc
++++ b/components/omnibox/browser/featured_search_provider.cc
+@@ -300,23 +300,10 @@ void FeaturedSearchProvider::AddFeatured
+     if (turl->starter_pack_id() !=
+             template_url_starter_pack_data::StarterPackId::kNone &&
+         turl->is_active() == TemplateURLData::ActiveStatus::kTrue) {
+-      // Skip @gemini if feature disabled.
+-      if (turl->starter_pack_id() ==
+-              template_url_starter_pack_data::StarterPackId::kGemini &&
+-          !OmniboxFieldTrial::IsStarterPackExpansionEnabled()) {
+-        continue;
+-      }
+-      // Skip @page if feature disabled.
+-      if (turl->starter_pack_id() ==
+-              template_url_starter_pack_data::StarterPackId::kPage &&
+-          !omnibox_feature_configs::ContextualSearch::Get().starter_pack_page) {
+-        continue;
+-      }
+-      // Skip @aimode if feature disabled.
+-      if (turl->starter_pack_id() ==
+-              template_url_starter_pack_data::StarterPackId::kAiMode &&
+-          !OmniboxFieldTrial::IsAimStarterPackEnabled(
+-              client_->GetAimEligibilityService())) {
++      // Disable all Google AI starter pack options
++      if (turl->starter_pack_id() == template_url_starter_pack_data::StarterPackId::kGemini ||
++          turl->starter_pack_id() == template_url_starter_pack_data::StarterPackId::kAiMode ||
++          turl->starter_pack_id() == template_url_starter_pack_data::StarterPackId::kPage) {
+         continue;
+       }
+       // The history starter pack engine is disabled in incognito mode.
+--- a/components/search_engines/ui_utils.cc
++++ b/components/search_engines/ui_utils.cc
+@@ -157,23 +157,14 @@ template_url_starter_pack_data::StarterP
+     bool ai_mode_enabled) {
+   template_url_starter_pack_data::StarterPackIdSet disabled_starter_pack_ids;
+ 
+-  // Skip @gemini if feature disabled.
+-  if (!base::FeatureList::IsEnabled(omnibox::kStarterPackExpansion)) {
+     disabled_starter_pack_ids.Put(
+         template_url_starter_pack_data::StarterPackId::kGemini);
+-  }
+ 
+-  // Skip @page if feature disabled.
+-  if (!omnibox_feature_configs::ContextualSearch::Get().starter_pack_page) {
+     disabled_starter_pack_ids.Put(
+         template_url_starter_pack_data::StarterPackId::kPage);
+-  }
+ 
+-  // Skip @aimode if feature disabled.
+-  if (!ai_mode_enabled) {
+     disabled_starter_pack_ids.Put(
+         template_url_starter_pack_data::StarterPackId::kAiMode);
+-  }
+ 
+   return disabled_starter_pack_ids;
+ }
