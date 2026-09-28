@@ -11,7 +11,8 @@
 
 | **版本**        | **源码**                                                                                   | **Windows**                                                                                   | **Linux**                                                                                   | **MacOS**     |
 |------------------|--------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|---------------------------------------------------------------------------------------------|-----------------------------------------------------------------------------------------------|
-| **Chrome 148**   | 跟随Chrome 149发布  | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium-148.0.7778.215-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium-148.0.7778.215-1-x86_64_linux.tar.xz) | [148.0.7778.215-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_macos.dmg) |
+| **Chrome 150**   | 跟随Chrome 151发布  | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/150.0.7871.186/ungoogled-chromium_150.0.7871.186-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/150.0.7871.186/ungoogled-chromium_150.0.7871.186-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/150.0.7871.186/ungoogled-chromium-150.0.7871.186-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/150.0.7871.186/ungoogled-chromium-150.0.7871.186-1-x86_64_linux.tar.xz) | |
+| **Chrome 148**   | [148.0.7778.215](https://github.com/adryfish/fingerprint-chromium/tree/148.0.7778.215)  | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium-148.0.7778.215-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium-148.0.7778.215-1-x86_64_linux.tar.xz) | [148.0.7778.215-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/148.0.7778.215/ungoogled-chromium_148.0.7778.215-1.1_macos.dmg) |
 | **Chrome 144**   | [144.0.7559.132](https://github.com/adryfish/fingerprint-chromium/tree/144.0.7559.132)  | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/144.0.7559.132/ungoogled-chromium_144.0.7559.132-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/144.0.7559.132/ungoogled-chromium_144.0.7559.132-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/144.0.7559.132/ungoogled-chromium-144.0.7559.132-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/144.0.7559.132/ungoogled-chromium-144.0.7559.132-1-x86_64_linux.tar.xz) | |
 | **Chrome 142**   | [142.0.7444.175](https://github.com/adryfish/fingerprint-chromium/tree/142.0.7444.175)              | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium_142.0.7444.175-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium_142.0.7444.175-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium-142.0.7444.175-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium-142.0.7444.175-1-x86_64_linux.tar.xz) | [142.0.7444.175-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/142.0.7444.175/ungoogled-chromium_142.0.7444.175-1.1_macos.dmg) |
 | **Chrome 139**   | [139.0.7258.154](https://github.com/adryfish/fingerprint-chromium/tree/139.0.7258.154)              | [安装包](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_installer_x64.exe) <br> [ZIP](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_windows_x64.zip) | [AppImage](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64.AppImage) <br> [TAR.XZ](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium-139.0.7258.154-1-x86_64_linux.tar.xz) | [139.0.7258.154-1.1_macos.dmg](https://github.com/adryfish/fingerprint-chromium/releases/download/139.0.7258.154/ungoogled-chromium_139.0.7258.154-1.1_macos.dmg) |
@@ -239,45 +240,13 @@ chrome.exe --fingerprint=2023 --fingerprint-platform=macos --fingerprint-platfor
 
 ## 赞助商
 
-### IPdodo
-
-值得信赖的代理IP提供商，专为跨境电商、社媒运营、网络爬虫、数据采集与全球业务增长，提供高匿名、高速且安全的代理IP + S5中转服务一体化解决方案。
-
-**优惠**：今日注册即可领取1GB免费住宅代理流量。
-- 邀请码：`ATUQ3Q0O`
-
-🔗 [立即注册](https://www.ipdodo.com/account/register?invite_code=ATUQ3Q0O)
-
-### IPFly
-
-性价比高、IP质量好、7x24客服的IP服务商。
-
-**优惠**：通过专属链接注册可享全场9折。
-- 折扣码：`adryfish`
-- 邀请码：`9A2WLGX9`
-
-🔗 [立即注册](https://ipfly.net/activity/OUEyV0xHWDk6TFZKOVhYQzM5NQ==)
-
-### RapidProxy
-
-高性能代理服务提供商，提供纯净真实的住宅代理和原生静态 ISP IP，具备高匿名性、高速度和低封禁率。适用于网页抓取、社交媒体自动化、跨境电商及全球业务运营。
-
-**优惠**：提供免费试用，住宅代理流量永久有效。
-**亮点**：原生静态 IP，低封禁，高度匿名，稳定性强。
-- 优惠码：`adryfish`（9折优惠）
-
-🔗 [立即注册](https://www.rapidproxy.io/?code=AZT7HA4NS)
-
-### OKKproxy
-
-🔥 OKKproxy 拥有8000万个全球住宅IP，一手厂商，TB级采购低至 0.4$/GB。
-
-- 🌐 **业务范围**：动态住宅代理IP / 海外移动IP / 静态住宅IP。
-- 🎀 **代理类型**：支持 HTTP(S)、SOCKS5 代理。
-- 🎉 **适用业务**：适用于电子商务、社交媒体、多账户、SEO。
-- 🤝 **成立时间**：3年。
-
-🔗 [立即注册](https://okkproxy.com/?utm_source=fingerprint&utm_medium=fingerprint&ref=fingerprint&sharecode=43783634)
+| **赞助商** | **简介** | **优惠 / 优惠码** | **链接** |
+|------------|----------|-------------------|----------|
+| **IPdodo** | 值得信赖的代理IP提供商，专为跨境电商、社媒运营、网络爬虫、数据采集与全球业务增长，提供高匿名、高速且安全的代理IP + S5中转服务一体化解决方案。 | 今日注册即可领取1GB免费住宅代理流量。<br>邀请码：`ATUQ3Q0O` | [立即注册](https://www.ipdodo.com/account/register?invite_code=ATUQ3Q0O) |
+| **IPFly** | 性价比高、IP质量好、7x24客服的IP服务商。 | 通过专属链接注册可享全场9折。<br>折扣码：`adryfish`<br>邀请码：`9A2WLGX9` | [立即注册](https://ipfly.net/activity/OUEyV0xHWDk6TFZKOVhYQzM5NQ==) |
+| **IPWO** | IPWO住宅代理提供200+地区IP资源，支持HTTP/HTTPS/SOCKS5协议，包含动态住宅代理/静态住宅代理/不限量住宅代理。可用于指纹浏览器开发、浏览器环境测试及全球网络访问场景，帮助开发者在不同地区网络环境下进行应用调试与项目实践。 | 注册可以免费测试。<br>专属9折折扣码：`0204` | [立即注册](https://www.ipwo.net/?ref=githubadryfish) |
+| **RapidProxy** | 高性能代理服务提供商，提供纯净真实的住宅代理和原生静态 ISP IP，具备高匿名性、高速度和低封禁率。适用于网页抓取、社交媒体自动化、跨境电商及全球业务运营。<br>**亮点**：原生静态 IP，低封禁，高度匿名，稳定性强。 | 提供免费试用，住宅代理流量永久有效。<br>优惠码：`adryfish`（9折优惠） | [立即注册](https://www.rapidproxy.io/?code=AZT7HA4NS) |
+| **OKKproxy** | 拥有8000万个全球住宅IP，一手厂商。业务范围：动态住宅代理IP / 海外移动IP / 静态住宅IP；支持 HTTP(S)、SOCKS5 代理；适用于电子商务、社交媒体、多账户、SEO；成立3年。 | TB级采购低至 0.4$/GB。 | [立即注册](https://okkproxy.com/?utm_source=fingerprint&utm_medium=fingerprint&ref=fingerprint&sharecode=43783634) |
 
 ## Credits
 
