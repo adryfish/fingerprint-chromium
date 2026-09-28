@@ -1,0 +1,13 @@
+diff --git a/headless/lib/browser/headless_browser_impl.cc b/headless/lib/browser/headless_browser_impl.cc
+index eb1a52ac99..c2231763ad 100644
+--- a/headless/lib/browser/headless_browser_impl.cc
++++ b/headless/lib/browser/headless_browser_impl.cc
+@@ -70,7 +70,7 @@ namespace headless {
+ namespace {
+ 
+ // Product name for building the default user agent string.
+-const char kHeadlessProductName[] = "HeadlessChrome";
++const char kHeadlessProductName[] = "Chrome";
+ 
+ #if defined(HEADLESS_USE_PREFS)
+ const base::FilePath::CharType kLocalStateFilename[] =

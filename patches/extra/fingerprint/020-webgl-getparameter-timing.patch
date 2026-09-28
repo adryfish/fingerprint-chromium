@@ -1,0 +1,68 @@
+diff --git a/third_party/blink/renderer/modules/webgl/webgl_fingerprint.cc b/third_party/blink/renderer/modules/webgl/webgl_fingerprint.cc
+index af37a8f324..2570c04b10 100644
+--- a/third_party/blink/renderer/modules/webgl/webgl_fingerprint.cc
++++ b/third_party/blink/renderer/modules/webgl/webgl_fingerprint.cc
+@@ -9,6 +9,7 @@
+ #include "base/containers/span.h"
+ #include "base/strings/string_number_conversions.h"
+ #include "base/strings/string_util.h"
++#include "base/time/time.h"
+ #include "components/ungoogled/ungoogled_switches.h"
+ #include "components/ungoogled/webgl_config_data.h"
+ #include "third_party/blink/renderer/bindings/modules/v8/webgl_any.h"
+@@ -156,6 +157,20 @@ bool TryGetWebGLUnmaskedParameter(ScriptState* script_state,
+   return LookupWebGLParameter(script_state, pname, is_webgl2, out);
+ }
+ 
++void ApplyWebGLUnmaskedParameterTimingDelay(unsigned pname) {
++  if (pname != kUnmaskedVendorWebgl && pname != kUnmaskedRendererWebgl) {
++    return;
++  }
++  if (!IsWebGLFingerprintEnabled()) {
++    return;
++  }
++
++  const base::TimeTicks deadline =
++      base::TimeTicks::Now() + base::Microseconds(16);
++  while (base::TimeTicks::Now() < deadline) {
++  }
++}
++
+ bool TryGetWebGLShaderPrecision(unsigned shader_type,
+                                 unsigned precision_type,
+                                 bool is_webgl2,
+diff --git a/third_party/blink/renderer/modules/webgl/webgl_fingerprint.h b/third_party/blink/renderer/modules/webgl/webgl_fingerprint.h
+index 94d4b1de57..93b9ac00bf 100644
+--- a/third_party/blink/renderer/modules/webgl/webgl_fingerprint.h
++++ b/third_party/blink/renderer/modules/webgl/webgl_fingerprint.h
+@@ -42,6 +42,10 @@ bool TryGetWebGLUnmaskedParameter(ScriptState* script_state,
+                                   bool is_webgl2,
+                                   ScriptValue* out);
+ 
++// Adds a small native timing cost for spoofed WEBGL_debug_renderer_info
++// parameters so repeated getParameter(UNMASKED_*) calls have realistic timing.
++void ApplyWebGLUnmaskedParameterTimingDelay(unsigned pname);
++
+ // Tries to override a getShaderPrecisionFormat() result. Returns true and fills
+ // |range| (min,max) and |*precision| when overridden; false otherwise.
+ bool TryGetWebGLShaderPrecision(unsigned shader_type,
+diff --git a/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc b/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc
+index 3aa86fd899..8c02a1e62d 100644
+--- a/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc
++++ b/third_party/blink/renderer/modules/webgl/webgl_rendering_context_base.cc
+@@ -4020,6 +4020,7 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
+         ScriptValue fingerprint_value;
+         if (TryGetWebGLUnmaskedParameter(script_state, pname, IsWebGL2(),
+                                          &fingerprint_value)) {
++          ApplyWebGLUnmaskedParameterTimingDelay(pname);
+           return fingerprint_value;
+         }
+         if (base::FeatureList::IsEnabled(blink::features::kSpoofWebGLInfo))
+@@ -4036,6 +4037,7 @@ ScriptValue WebGLRenderingContextBase::getParameter(ScriptState* script_state,
+         ScriptValue fingerprint_value;
+         if (TryGetWebGLUnmaskedParameter(script_state, pname, IsWebGL2(),
+                                          &fingerprint_value)) {
++          ApplyWebGLUnmaskedParameterTimingDelay(pname);
+           return fingerprint_value;
+         }
+         if (base::FeatureList::IsEnabled(blink::features::kSpoofWebGLInfo))

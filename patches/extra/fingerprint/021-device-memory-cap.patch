@@ -1,0 +1,22 @@
+diff --git a/third_party/blink/renderer/core/frame/navigator_device_memory.cc b/third_party/blink/renderer/core/frame/navigator_device_memory.cc
+index bea100a8b0..7db4e91a36 100644
+--- a/third_party/blink/renderer/core/frame/navigator_device_memory.cc
++++ b/third_party/blink/renderer/core/frame/navigator_device_memory.cc
+@@ -16,14 +16,13 @@ namespace blink {
+ float NavigatorDeviceMemory::deviceMemory() const {
+   const base::CommandLine* command_line = base::CommandLine::ForCurrentProcess();
+ 
+-  // navigator.deviceMemory 的真实上限并非 8：按指纹 seed 从 {8, 16, 32, 64}
+-  // 中确定性地选取一个值进行伪装。
++  // navigator.deviceMemory caps high-memory devices at 32GB.
+   if (command_line->HasSwitch(switches::kFingerprint)) {
+     std::string fingerprint_str =
+         command_line->GetSwitchValueASCII(switches::kFingerprint);
+     uint32_t fingerprint = static_cast<uint32_t>(std::stoull(fingerprint_str));
+-    static const float kDeviceMemoryValues[] = {8, 16, 32, 64};
+-    return kDeviceMemoryValues[fingerprint % 4];
++    static const float kDeviceMemoryValues[] = {8, 16, 32};
++    return kDeviceMemoryValues[fingerprint % 3];
+   }
+ 
+   return ApproximatedDeviceMemory::GetApproximatedDeviceMemory();
