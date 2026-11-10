@@ -131,7 +131,7 @@ approach to change color components.
 +// set the component to maximum-delta if it is >= maximum, or add to existing color component (color + delta)
 +#define shuffleComponent(color, max, delta) ( (color) >= (max) ? ((max)-(delta)) : ((color)+(delta)) )
 +
-+#define writable_addr(T, p, stride, x, y) (T*)((const char *)p + y * stride + x * sizeof(T))
++#define writable_addr(T, p, stride, x, y) (T*)((const char *)(p) + (y) * (stride) + (x) * sizeof(T))
 +
 +void StaticBitmapImage::ShuffleSubchannelColorData(const void *addr, const SkImageInfo& info, int srcX, int srcY) {
 +  auto w = info.width() - srcX, h = info.height() - srcY;
